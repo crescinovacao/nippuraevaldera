@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Universo Nippura & Valdera</title>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&family=Aptos:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -86,15 +87,7 @@
         flex-direction: column;
         justify-content: center;
 
-        /* ===================================================================
-           SUBSTITUA AQUI PELA IMAGEM DE FUNDO (Amanda vai enviar depois)
-           Troque a linha abaixo por, por exemplo:
-           background-image: url('SUA_IMAGEM_AQUI.png');
-           Mantenha o restante das propriedades (size/position/repeat).
-           =================================================================== */
-        background-image:
-            linear-gradient(160deg, rgba(45,0,81,0.88) 0%, rgba(162,97,225,0.55) 55%, rgba(222,197,255,0.35) 100%),
-            linear-gradient(135deg, #2D0051 0%, #A261E1 60%, #DEC5FF 100%);
+        background-image: url('https://i.imgur.com/MS39eqn.png');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -104,7 +97,7 @@
         position: absolute;
         inset: 0;
         z-index: 1;
-        background: linear-gradient(180deg, rgba(0,8,25,0.15) 0%, rgba(0,8,25,0.35) 55%, rgba(0,8,25,0.75) 100%);
+        background: none;
         pointer-events: none;
     }
 
@@ -133,7 +126,7 @@
         font-family: 'Raleway', sans-serif;
         font-weight: 800;
         color: #fff;
-        font-size: clamp(30px, 6vw, 56px);
+        font-size: clamp(38px, 7.5vw, 72px);
         line-height: 1.08;
         max-width: 760px;
     }
@@ -163,19 +156,19 @@
         font-weight: 800;
         font-size: 14px;
         color: #fff;
-        background: rgba(6,16,40,0.55);
-        backdrop-filter: blur(14px) saturate(140%);
-        -webkit-backdrop-filter: blur(14px) saturate(140%);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 30px;
+        background: #7B3FBE;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 10px;
         padding: 14px 26px;
         cursor: pointer;
-        box-shadow: 0 12px 30px -14px rgba(0,10,40,0.55);
-        transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        transition: transform 0.25s ease, background 0.25s ease;
         animation: flutuar 6s ease-in-out infinite;
         white-space: nowrap;
     }
-    .hero-btn:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.45); background: rgba(6,16,40,0.75); }
+    .hero-btn:hover { transform: translateY(-3px); background: #6A30A8; }
 
     @keyframes flutuar {
         0%, 100% { transform: translateY(0); }
@@ -194,7 +187,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: var(--overlay-fundo, rgba(0, 10, 30, 0.6));
+        background: var(--overlay-fundo, rgba(4, 0, 7, 0.65));
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
         z-index: 100;
@@ -226,7 +219,7 @@
         z-index: 3;
         display: flex;
         align-items: center;
-        background: var(--azul-principal);
+        background: var(--azul-escuro);
         border-radius: 8px 8px 0 0;
         padding: 10px 18px;
         flex-shrink: 0;
@@ -249,23 +242,23 @@
         position: relative;
         z-index: 1;
         margin-left: auto;
-        background: rgba(255,255,255,0.18);
+        background: var(--azul-principal, #7B3FBE);
         color: #fff;
         border: none;
-        width: 32px;
-        height: 32px;
-        min-height: 32px;
-        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        min-height: 36px;
+        border-radius: 10px;
         font-size: 17px;
         line-height: 1;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.3s ease;
+        transition: opacity 0.2s ease;
         flex-shrink: 0;
     }
-    .modal-close:hover { background: rgba(255,255,255,0.32); }
+    .modal-close:hover { opacity: 0.85; }
 
     /* ============================================================
        POPUP DE CONFIRMAÇÃO — SAIR DA ETAPA
@@ -342,23 +335,23 @@
     .btn-voltar {
         position: relative;
         z-index: 1;
-        background: rgba(255,255,255,0.18);
+        background: var(--azul-principal, #7B3FBE);
         color: #fff;
         border: none;
-        border-radius: 30px;
-        height: 32px;
-        padding: 0 16px;
+        border-radius: 10px;
+        height: 36px;
+        padding: 0 18px;
         font-family: 'Raleway', sans-serif;
-        font-weight: 700;
-        font-size: 12px;
+        font-weight: 800;
+        font-size: 13px;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 6px;
-        transition: background 0.3s ease;
+        transition: opacity 0.2s ease;
         flex-shrink: 0;
     }
-    .btn-voltar:hover { background: rgba(255,255,255,0.32); }
+    .btn-voltar:hover { opacity: 0.85; }
 
     .modal-body {
         overflow-y: auto;
@@ -1091,7 +1084,7 @@
         border-radius: 20px;
         margin-bottom: 4px;
     }
-    .pessoa-tag-nippura { background: #EDE0FA; color: #2D0051; }
+    .pessoa-tag-nippura { background: #A1EAE6; color: #004641; }
     .pessoa-tag-valdera { background: #CFE5B1; color: #003E00; }
     .pessoa-nome {
         font-family: 'Raleway', sans-serif;
@@ -2077,7 +2070,7 @@
         <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="hero-logo">
 
         <div class="hero-textos">
-            <h1>Universo <span class="accent">Nippura</span> &amp; <span class="accent">Valdera</span></h1>
+            <h1>Universo<br><span class="accent">Nippura</span> &amp; <span class="accent">Valdera</span></h1>
             <p>Aqui estão reunidos todos os artefatos do case: documentos, diários e outros registros que ajudam a entender a fusão entre as duas organizações.</p>
             <p><strong>Explore livremente antes do encontro.</strong></p>
         </div>
@@ -4104,7 +4097,7 @@ function detalhePersonagens(m) {
             '<div class="pessoa-foto-area">' + foto + '</div>' +
             '<div class="pessoa-info">' +
                 '<span class="pessoa-tag ' + tagClasse + '">' + tagTexto + '</span>' +
-                '<h4 class="pessoa-nome">' + p.nome + '</h4>' +
+                '<h4 class="pessoa-nome" style="color:' + p.cor + ';">' + p.nome + '</h4>' +
                 '<p class="pessoa-papel">' + p.papel + '</p>' +
                 '<p class="pessoa-descricao">' + (p.descricao || '') + '</p>' +
             '</div>' +
@@ -4122,7 +4115,8 @@ const TITULOS_CATEGORIA = {
 // Paletas próprias por categoria. Categorias fora desta lista usam a
 // paleta roxa padrão do restante da ferramenta (nenhuma sobrescrita).
 const PALETAS_CATEGORIA = {
-    valdera: { escuro: '#003E00', principal: '#00C466', claro: '#BDF4CC', overlay: 'rgba(0,62,0,0.72)' }
+    nippura: { escuro: '#004641', principal: '#009EAA', claro: '#A1EAE6' },
+    valdera: { escuro: '#003E00', principal: '#00C466', claro: '#BDF4CC' }
 };
 
 function aplicarTemaCategoria(categoria) {
@@ -4134,12 +4128,10 @@ function aplicarTemaCategoria(categoria) {
         box.style.setProperty('--azul-escuro', paleta.escuro);
         box.style.setProperty('--azul-principal', paleta.principal);
         box.style.setProperty('--azul-claro', paleta.claro);
-        overlay.style.setProperty('--overlay-fundo', paleta.overlay);
     } else {
         box.style.removeProperty('--azul-escuro');
         box.style.removeProperty('--azul-principal');
         box.style.removeProperty('--azul-claro');
-        overlay.style.removeProperty('--overlay-fundo');
     }
 }
 
@@ -4278,18 +4270,18 @@ const PERSONAGENS = [
       descricao: 'Assinou o tratado acreditando nele; defende seus avanços publicamente e tem perguntas que ainda não fez em privado.' },
     { id: 'carla', nome: 'Carla Davan', papel: 'Ministra de Desenvolvimento de Valdera', lado: 'valdera', foto: '',
       descricao: 'Negocia com Nippura todos os dias, entrega resultados e em algum momento começou a se perguntar se ainda está governando.' },
-    { id: 'ana', nome: 'Ana Breva', papel: 'Coordenadora de Projetos de Valdera', lado: 'valdera', foto: '',
+    { id: 'ana', nome: 'Ana Breva', papel: 'Coordenadora de Projetos de Valdera', lado: 'valdera', foto: 'https://i.imgur.com/13QNL0S.jpeg',
       descricao: 'Estava entre as primeiras a abraçar a integração e hoje acumula propostas sem resposta e projetos aprovados que não avançam.' },
-    { id: 'renata', nome: 'Renata Solva', papel: 'Especialista em Projetos Integrados', lado: 'valdera', foto: '',
+    { id: 'renata', nome: 'Renata Solva', papel: 'Especialista em Projetos Integrados', lado: 'valdera', foto: 'https://i.imgur.com/YfmjGmE.jpeg',
       descricao: 'Viveu em Nippura por dois anos, voltou para Valdera diferente e hoje não pertence completamente a nenhum dos dois mundos.' },
     { id: 'julia', nome: 'Julia Moran', papel: 'Analista de Projetos Integrados', lado: 'valdera', foto: '',
       descricao: 'Trabalha com equipes mistas no cotidiano, percebe o choque cultural antes de todo mundo e raramente é consultada sobre o que vê.' },
-    { id: 'pedro', nome: 'Pedro Garval', papel: 'Cidadão de Valdera, área de suporte administrativo', lado: 'valdera', foto: '',
+    { id: 'pedro', nome: 'Pedro Garval', papel: 'Cidadão de Valdera, área de suporte administrativo', lado: 'valdera', foto: 'https://i.imgur.com/vXhhk8h.jpeg',
       descricao: 'Não tem cargo de liderança nem discurso a manter; sente o impacto da integração nas práticas que mudaram sem que ninguém explicasse por quê.' }
 ].map(function(p) {
     const partes = p.nome.split(' ');
     p.iniciais = (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
-    p.cor = p.lado === 'nippura' ? '#2D0051' : '#A261E1';
+    p.cor = p.lado === 'nippura' ? '#004641' : '#003E00';
     return p;
 });
 
@@ -4752,47 +4744,93 @@ function getDossie3(){
 // PDF exports
 function pv(id){ return v(id)||'(não preenchido)'; }
 
-function printConsolid(){
-  var html='<p class="pr-h1">Síntese do Grupo</p>'
-   +'<p class="pr-meta">Orquestrar — Nippura + Valdera</p>'
-   +'<div class="pr-sec"><p class="pr-sec-title">Valores Culturais Prioritários</p>'
-   +pItem('Valor 1','c1','c1p')
-   +pItem('Valor 2','c2','c2p')
-   +pItem('Valor 3','c3','c3p')
-   +'</div>'
-   +'<div class="pr-sec"><p class="pr-sec-title">Comportamentos da Liderança</p>'
-   +'<div class="pr-item"><span class="pr-lbl">Comportamentos observáveis</span>'
-   +'<p class="pr-val">1. '+pv('l1')+'</p>'
-   +'<p class="pr-val">2. '+pv('l2')+'</p>'
-   +'<p class="pr-val">3. '+pv('l3')+'</p>'
-   +(v('l4')?'<p class="pr-val">4. '+v('l4')+'</p>':'')
-   +'</div></div>';
-  document.getElementById('print-area').innerHTML=html;
-  document.body.classList.add('imprimindo-orquestrar');
-  window.print();
-  setTimeout(function() { document.body.classList.remove('imprimindo-orquestrar'); }, 500);
+// ---- helpers de estilo PDF ----
+var PDF_FONT = "'Raleway', 'Segoe UI', sans-serif";
+var PDF_BODY_FONT = "'Aptos', 'Segoe UI', sans-serif";
+var PDF_ROXO  = '#2D0051';   // escuro
+var PDF_MEDIO = '#A261E1';   // principal
+var PDF_CLARO = '#DEC5FF';   // claro
+
+function pdfCabecalho(){
+  return '<div style="background:'+PDF_ROXO+';padding:22px 32px;text-align:center;">'
+        +'<img crossorigin="anonymous" src="https://i.imgur.com/fUPVKmL.png" style="height:30px;display:inline-block;" alt="Crescimentum">'
+        +'</div>';
+}
+
+function pdfSecTitulo(txt){
+  return '<p style="font-family:'+PDF_FONT+';font-size:15px;font-weight:800;'
+        +'color:'+PDF_MEDIO+';margin:0 0 12px 0;padding-bottom:8px;">'+txt+'</p>';
+}
+
+function pdfItemBloco(label, linhas){
+  var corpo = linhas.map(function(l){
+    return '<p style="font-family:'+PDF_BODY_FONT+';font-size:13px;color:#210000;margin:2px 0 0 0;line-height:1.55;">'+l+'</p>';
+  }).join('');
+  return '<div style="margin-bottom:18px;">'
+        +'<span style="font-family:'+PDF_FONT+';font-size:11px;font-weight:700;'
+        +'color:'+PDF_ROXO+';display:block;margin-bottom:4px;">'+label+'</span>'
+        +corpo
+        +'</div>';
 }
 
 function pItem(label,id,idp){
   var val=v(id); if(!val) return '';
-  return '<div class="pr-item"><span class="pr-lbl">'+label+'</span>'
-   +'<p class="pr-val">'+val+'</p>'
-   +(v(idp)?'<p class="pr-sub">Na prática: '+v(idp)+'</p>':'')
+  var linhas = [val];
+  if(v(idp)) linhas.push('<strong>Na prática:</strong> '+v(idp));
+  return pdfItemBloco(label, linhas);
+}
+
+function pdfWrap(titulo, subtitulo, corpo){
+  return '<div style="font-family:'+PDF_FONT+';background:#fff;width:794px;">'
+        +pdfCabecalho()
+        +'<div style="padding:40px 48px;">'
+        +'<p style="font-family:'+PDF_FONT+';font-size:26px;font-weight:800;color:'+PDF_ROXO+';margin:0 0 4px 0;line-height:1.1;">'+titulo+'</p>'
+        +'<p style="font-family:'+PDF_BODY_FONT+';font-size:12px;color:#888;margin:0 0 28px 0;padding-bottom:16px;">'+subtitulo+'</p>'
+        +corpo
+        +'</div></div>';
+}
+
+function pdfDownload(html, filename){
+  var el = document.createElement('div');
+  el.style.cssText = 'width:794px;background:#fff;';
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  html2pdf().set({
+    margin: 0,
+    filename: filename,
+    html2canvas: { scale: 2, useCORS: true, allowTaint: true, scrollX: 0, scrollY: 0 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(el).save().then(function(){ document.body.removeChild(el); });
+}
+
+function printConsolid(){
+  var N = '<span style="font-family:'+PDF_FONT+';font-weight:800;color:'+PDF_ROXO+';">';
+  var NE = '</span> ';
+  var corpo = ''
+   +'<div style="margin-bottom:28px;">'+pdfSecTitulo('Valores Culturais Prioritários')
+   +pItem('Valor 1','c1','c1p')
+   +pItem('Valor 2','c2','c2p')
+   +pItem('Valor 3','c3','c3p')
+   +'</div>'
+   +'<div style="margin-bottom:28px;">'+pdfSecTitulo('Comportamentos da Liderança')
+   +pdfItemBloco('Comportamentos observáveis', [
+       N+'1.'+NE+pv('l1'),
+       N+'2.'+NE+pv('l2'),
+       N+'3.'+NE+pv('l3'),
+     ].concat(v('l4') ? [N+'4.'+NE+v('l4')] : []))
    +'</div>';
+  pdfDownload(pdfWrap('Síntese do Grupo','Orquestrar — Nippura + Valdera', corpo), 'sintese-do-grupo.pdf');
 }
 
 function printDecision(){
-  var html='<p class="pr-h1">Registro de Decisão</p>'
-   +'<p class="pr-meta">Orquestrar — Nippura + Valdera</p>'
-   +'<div class="pr-sec">'
-   +'<div class="pr-item"><span class="pr-lbl">Nossa prioridade para o primeiro ano</span><p class="pr-val">'+pv('tk-p')+'</p></div>'
-   +'<div class="pr-item"><span class="pr-lbl">Escolhemos porque vimos</span><p class="pr-val">1. '+pv('tk-e1')+'</p><p class="pr-val">2. '+pv('tk-e2')+'</p></div>'
-   +'<div class="pr-item"><span class="pr-lbl">Mudança que queremos começar a perceber</span><p class="pr-val">'+pv('tk-m')+'</p></div>'
+  var N = '<span style="font-family:'+PDF_FONT+';font-weight:800;color:'+PDF_ROXO+';">';
+  var NE = '</span> ';
+  var corpo = '<div style="margin-bottom:28px;">'
+   +pdfItemBloco('Nossa prioridade para o primeiro ano', [pv('tk-p')])
+   +pdfItemBloco('Escolhemos porque vimos', [N+'1.'+NE+pv('tk-e1'), N+'2.'+NE+pv('tk-e2')])
+   +pdfItemBloco('Mudança que queremos começar a perceber', [pv('tk-m')])
    +'</div>';
-  document.getElementById('print-area').innerHTML=html;
-  document.body.classList.add('imprimindo-orquestrar');
-  window.print();
-  setTimeout(function() { document.body.classList.remove('imprimindo-orquestrar'); }, 500);
+  pdfDownload(pdfWrap('Registro de Decisão','Orquestrar — Nippura + Valdera', corpo), 'registro-de-decisao.pdf');
 }
 
 updateProg('e1');
