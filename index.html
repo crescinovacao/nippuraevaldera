@@ -2273,12 +2273,89 @@
 }
 .admin-evento-linha:last-child { border-bottom: none; }
 .admin-evento-titulo { opacity: 0.85; }
-.admin-evento-duracao {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    opacity: 0.5;
+.painel-admin-gerar-link {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.painel-admin-gerar-link input {
+    flex: 1;
+    border: 1px solid rgba(0,10,40,0.15);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    color: var(--texto);
+    outline: none;
+}
+.painel-admin-gerar-link button,
+.admin-link-gerado button {
+    background: var(--azul-escuro);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
     white-space: nowrap;
-    flex-shrink: 0;
+}
+.admin-link-gerado {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.admin-link-gerado input {
+    flex: 1;
+    border: 1px solid rgba(0,10,40,0.15);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--texto);
+    background: var(--fundo);
+    outline: none;
+}
+.admin-link-copiado {
+    font-size: 11px;
+    color: #009EAA;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.painel-admin-turma-sel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.painel-admin-turma-sel label {
+    font-size: 12px;
+    color: var(--texto);
+    opacity: 0.7;
+    white-space: nowrap;
+}
+.painel-admin-turma-sel select {
+    flex: 1;
+    border: 1px solid rgba(0,10,40,0.15);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    color: var(--texto);
+    background: var(--fundo);
+    outline: none;
+    cursor: pointer;
+}
+.admin-visitante-turma {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--azul-claro);
+    color: var(--azul-escuro);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    opacity: 0.8;
 }
 
 </style>
@@ -5657,8 +5734,28 @@ document.addEventListener('keydown', function(e) {
     </div>
 
     <div class="painel-admin-corpo">
+
+        <div class="painel-admin-secao">
+            <h3>Gerar link por turma</h3>
+            <div class="painel-admin-gerar-link">
+                <input type="text" id="admin-input-turma" placeholder="Ex: BTG Outubro 2025" autocomplete="off">
+                <button id="admin-btn-gerar">Gerar link</button>
+            </div>
+            <div id="admin-link-gerado" class="admin-link-gerado" style="display:none;">
+                <input type="text" id="admin-link-texto" readonly>
+                <button id="admin-btn-copiar">Copiar</button>
+            </div>
+            <p id="admin-link-copiado" class="admin-link-copiado" style="display:none;">✓ Copiado!</p>
+        </div>
+
         <div class="painel-admin-secao">
             <h3>Liberar etapas</h3>
+            <div class="painel-admin-turma-sel">
+                <label>Turma:</label>
+                <select id="admin-sel-turma-orq">
+                    <option value="">Selecione uma turma</option>
+                </select>
+            </div>
             <label class="painel-admin-toggle-linha">
                 <span>Liberar Orquestrar</span>
                 <input type="checkbox" id="toggle-orquestrar">
@@ -5668,87 +5765,93 @@ document.addEventListener('keydown', function(e) {
 
         <div class="painel-admin-secao">
             <h3>Quem acessou <span id="admin-total-visitantes" class="painel-admin-total"></span></h3>
+            <div class="painel-admin-turma-sel">
+                <label>Filtrar por turma:</label>
+                <select id="admin-sel-turma-relatorio">
+                    <option value="">Todas as turmas</option>
+                </select>
+            </div>
             <div id="admin-lista-visitantes" class="admin-lista-visitantes">
                 <p class="admin-vazio">Ainda ninguém acessou.</p>
             </div>
         </div>
+
     </div>
 </div>
 
 <!-- ============================================================
      IDENTIFICAÇÃO, RASTREAMENTO E PAINEL DO CONSULTOR
      ------------------------------------------------------------
-     Reaproveita a mesma configuração Firebase da Crescimentum, num
-     caminho próprio (nippura-valdera/...) que não interfere em nada
-     dos outros projetos.
+     Projeto: crescimentum-dinamicas (Realtime Database)
+     Caminho: nippura-valdera/turmas/{turmaId}/acessos/{visitanteId}
 
-     CONSULTOR: acesse este mesmo arquivo com ?admin=cresci2026 no
-     final da URL. Troque a senha abaixo se quiser (SENHA_ADMIN).
+     CONSULTOR: acesse com ?admin=cresci2026 no final da URL.
+     TURMA: gere o link pelo painel admin. Ex: ?turma=btg_out_2025
      ============================================================ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, push, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB7O-0pxrb_hGKHigkQNdC851fysxl5Z_8",
-    authDomain: "teste-jogo-crescimentum.firebaseapp.com",
-    databaseURL: "https://teste-jogo-crescimentum-default-rtdb.firebaseio.com",
-    projectId: "teste-jogo-crescimentum",
-    storageBucket: "teste-jogo-crescimentum.firebasestorage.app",
-    messagingSenderId: "506040174576",
-    appId: "1:506040174576:web:8dc39cb8243c9947207f35"
+    apiKey: "AIzaSyB_amk-VFel56J4XG8YORjoRX_r0W6lTUg",
+    authDomain: "crescimentum-dinamicas.firebaseapp.com",
+    databaseURL: "https://crescimentum-dinamicas-default-rtdb.firebaseio.com",
+    projectId: "crescimentum-dinamicas",
+    storageBucket: "crescimentum-dinamicas.firebasestorage.app",
+    messagingSenderId: "53012299693",
+    appId: "1:53012299693:web:a53852de0d699a42a3ab24"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db  = getDatabase(app);
 
-const CAMINHO = 'nippura-valdera';
+const CAMINHO     = 'nippura-valdera';
 const SENHA_ADMIN = 'cresci2026';
 
-const parametros = new URLSearchParams(window.location.search);
-const modoAdmin = parametros.get('admin') === SENHA_ADMIN;
+const parametros  = new URLSearchParams(window.location.search);
+const modoAdmin   = parametros.get('admin') === SENHA_ADMIN;
+const turmaParam  = parametros.get('turma') || 'sem_turma';
+const CAMINHO_TURMA = CAMINHO + '/turmas/' + turmaParam;
 
+// ---- helpers ----
 function slugify(txt) {
     return txt.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase();
+        .replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase().replace(/^_|_$/g, '');
 }
-
 function escapeHtml(txt) {
     const d = document.createElement('div');
     d.textContent = txt || '';
     return d.innerHTML;
 }
-
-function formatarDuracao(segundos) {
-    if (!segundos) return '';
-    if (segundos < 60) return segundos + 's';
-    const min = Math.floor(segundos / 60);
-    const seg = segundos % 60;
-    return min + 'min' + (seg ? ' ' + seg + 's' : '');
+function formatarDuracao(s) {
+    if (!s) return '';
+    if (s < 60) return s + 's';
+    return Math.floor(s / 60) + 'min' + (s % 60 ? ' ' + s % 60 + 's' : '');
+}
+function formatarData(ts) {
+    if (!ts) return '';
+    return new Date(ts).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
-// ------------------------------------------------------------
-// Portão de entrada — pede o nome (não aparece pro consultor)
-// ------------------------------------------------------------
+// ---- portão de entrada ----
 let visitanteId = null;
 const portao = document.getElementById('portao-entrada');
 
 function tentarReconectarVisitante() {
     const salvo = sessionStorage.getItem('nv_visitante');
     if (!salvo) return false;
-    try {
-        const dados = JSON.parse(salvo);
-        visitanteId = dados.id;
-        return true;
-    } catch (e) { return false; }
+    try { visitanteId = JSON.parse(salvo).id; return true; } catch(e) { return false; }
 }
 
 function entrarComoVisitante(nome) {
     const nomeLimpo = nome.trim();
     visitanteId = slugify(nomeLimpo) + '_' + Date.now().toString(36);
     sessionStorage.setItem('nv_visitante', JSON.stringify({ id: visitanteId, nome: nomeLimpo }));
-    set(ref(db, CAMINHO + '/acessos/' + visitanteId + '/nome'), nomeLimpo);
-    set(ref(db, CAMINHO + '/acessos/' + visitanteId + '/entrada'), Date.now());
+    set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId), {
+        nome: nomeLimpo,
+        turma: turmaParam,
+        entrada: Date.now()
+    });
 }
 
 if (modoAdmin) {
@@ -5757,57 +5860,44 @@ if (modoAdmin) {
     if (portao) portao.classList.add('escondido');
 } else {
     const portaoInput = document.getElementById('portao-nome');
-    const portaoBtn = document.getElementById('portao-entrar');
+    const portaoBtn   = document.getElementById('portao-entrar');
     const portaoAviso = document.getElementById('portao-aviso');
-
     function confirmarEntrada() {
-        const nome = portaoInput.value.trim();
-        if (!nome) {
-            portaoAviso.style.display = 'block';
-            return;
-        }
+        const nome = portaoInput ? portaoInput.value.trim() : '';
+        if (!nome) { if (portaoAviso) portaoAviso.style.display = 'block'; return; }
         entrarComoVisitante(nome);
-        portao.classList.add('escondido');
+        if (portao) portao.classList.add('escondido');
     }
-
     if (portaoBtn) portaoBtn.addEventListener('click', confirmarEntrada);
     if (portaoInput) portaoInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') confirmarEntrada();
     });
 }
 
-// ------------------------------------------------------------
-// Rastreamento — o que cada visitante abriu, e por quanto tempo
-// ------------------------------------------------------------
+// ---- rastreamento ----
 let eventoAtual = null;
-
 window.iniciarRastreio = function(tipo, titulo, categoria) {
     window.finalizarRastreio();
-    eventoAtual = { tipo: tipo, titulo: titulo, categoria: categoria || null, inicio: Date.now() };
+    eventoAtual = { tipo, titulo, categoria: categoria || null, inicio: Date.now() };
 };
-
 window.finalizarRastreio = function() {
     if (!eventoAtual || !visitanteId) { eventoAtual = null; return; }
-    const duracaoSegundos = Math.round((Date.now() - eventoAtual.inicio) / 1000);
-    if (duracaoSegundos >= 1) {
-        push(ref(db, CAMINHO + '/acessos/' + visitanteId + '/eventos'), {
+    const dur = Math.round((Date.now() - eventoAtual.inicio) / 1000);
+    if (dur >= 1) {
+        push(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId + '/eventos'), {
             tipo: eventoAtual.tipo,
             titulo: eventoAtual.titulo,
             categoria: eventoAtual.categoria,
             inicio: eventoAtual.inicio,
-            duracaoSegundos: duracaoSegundos
+            duracaoSegundos: dur
         });
     }
     eventoAtual = null;
 };
-
 window.addEventListener('beforeunload', function() { window.finalizarRastreio(); });
 
-// ------------------------------------------------------------
-// Liberar Orquestrar — em tempo real pra quem já está com a tela
-// aberta
-// ------------------------------------------------------------
-onValue(ref(db, CAMINHO + '/liberacoes/orquestrar'), function(snap) {
+// ---- liberar Orquestrar (escuta a turma do participante) ----
+onValue(ref(db, CAMINHO_TURMA + '/liberacoes/orquestrar'), function(snap) {
     const liberado = !!snap.val();
     const btnOrq = document.getElementById('btn-orquestrar');
     if (btnOrq) btnOrq.style.display = liberado ? 'inline-block' : 'none';
@@ -5815,70 +5905,167 @@ onValue(ref(db, CAMINHO + '/liberacoes/orquestrar'), function(snap) {
     if (toggle) toggle.checked = liberado;
 });
 
-// ------------------------------------------------------------
-// Painel do consultor
-// ------------------------------------------------------------
+// ---- painel do consultor ----
 if (modoAdmin) {
     const painel = document.getElementById('painel-admin');
     if (painel) painel.style.display = 'flex';
 
+    // fechar
     const btnFechar = document.getElementById('btn-fechar-admin');
     if (btnFechar) btnFechar.addEventListener('click', function() {
         painel.style.display = 'none';
     });
 
-    const toggleOrq = document.getElementById('toggle-orquestrar');
-    if (toggleOrq) toggleOrq.addEventListener('change', function(e) {
-        set(ref(db, CAMINHO + '/liberacoes/orquestrar'), e.target.checked);
+    // ---- gerar link por turma ----
+    const inputTurma   = document.getElementById('admin-input-turma');
+    const btnGerar     = document.getElementById('admin-btn-gerar');
+    const linkGerado   = document.getElementById('admin-link-gerado');
+    const linkTexto    = document.getElementById('admin-link-texto');
+    const btnCopiar    = document.getElementById('admin-btn-copiar');
+    const linkCopiado  = document.getElementById('admin-link-copiado');
+
+    if (btnGerar) btnGerar.addEventListener('click', function() {
+        const nome = inputTurma ? inputTurma.value.trim() : '';
+        if (!nome) return;
+        const slug = slugify(nome);
+        const url  = window.location.origin + window.location.pathname + '?turma=' + slug;
+        if (linkTexto) linkTexto.value = url;
+        if (linkGerado) linkGerado.style.display = 'flex';
+        if (linkCopiado) linkCopiado.style.display = 'none';
+        // registra a turma no Firebase
+        set(ref(db, CAMINHO + '/turmas/' + slug + '/nome'), nome);
+        atualizarSelectsTurma(slug);
     });
 
-    onValue(ref(db, CAMINHO + '/acessos'), function(snap) {
-        const dados = snap.val() || {};
-        const lista = document.getElementById('admin-lista-visitantes');
-        const total = document.getElementById('admin-total-visitantes');
-        if (!lista || !total) return;
+    if (btnCopiar) btnCopiar.addEventListener('click', function() {
+        if (linkTexto) { linkTexto.select(); navigator.clipboard.writeText(linkTexto.value); }
+        if (linkCopiado) { linkCopiado.style.display = 'block'; setTimeout(function() { linkCopiado.style.display = 'none'; }, 2500); }
+    });
 
-        const ids = Object.keys(dados).sort(function(a, b) {
-            return (dados[b].entrada || 0) - (dados[a].entrada || 0);
-        });
-        total.textContent = '(' + ids.length + ')';
+    // ---- selects de turma ----
+    const selOrq      = document.getElementById('admin-sel-turma-orq');
+    const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
+    let turmaOrqAtiva = null;
+    let unsub = null;
 
-        if (ids.length === 0) {
-            lista.innerHTML = '<p class="admin-vazio">Ainda ninguém acessou.</p>';
-            return;
-        }
-
-        lista.innerHTML = ids.map(function(id) {
-            const v = dados[id];
-            const nome = v.nome || id;
-            const quando = v.entrada
-                ? new Date(v.entrada).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
-                : '';
-            const eventos = v.eventos ? Object.values(v.eventos) : [];
-            eventos.sort(function(a, b) { return (a.inicio || 0) - (b.inicio || 0); });
-
-            const eventosHtml = eventos.length
-                ? eventos.map(function(ev) {
-                    return '<div class="admin-evento-linha"><span class="admin-evento-titulo">' +
-                        escapeHtml(ev.titulo) + '</span><span class="admin-evento-duracao">' +
-                        formatarDuracao(ev.duracaoSegundos) + '</span></div>';
-                }).join('')
-                : '<p class="admin-vazio">Ainda não abriu nada.</p>';
-
-            return '<div class="admin-visitante" data-id="' + id + '">' +
-                '<div class="admin-visitante-cabecalho">' +
-                    '<span class="admin-visitante-nome">' + escapeHtml(nome) + '</span>' +
-                    '<span class="admin-visitante-quando">' + quando + '</span>' +
-                '</div>' +
-                '<div class="admin-visitante-eventos">' + eventosHtml + '</div>' +
-            '</div>';
-        }).join('');
-
-        lista.querySelectorAll('.admin-visitante-cabecalho').forEach(function(cab) {
-            cab.addEventListener('click', function() {
-                cab.parentElement.classList.toggle('aberto');
+    function atualizarSelectsTurma(novaSlug) {
+        get(ref(db, CAMINHO + '/turmas')).then(function(snap) {
+            const turmas = snap.val() || {};
+            const slugs  = Object.keys(turmas).sort();
+            [selOrq, selRelatorio].forEach(function(sel, i) {
+                if (!sel) return;
+                const valorAtual = sel.value;
+                // mantém opção padrão
+                sel.innerHTML = i === 0
+                    ? '<option value="">Selecione uma turma</option>'
+                    : '<option value="">Todas as turmas</option>';
+                slugs.forEach(function(s) {
+                    const label = turmas[s].nome || s;
+                    const opt   = document.createElement('option');
+                    opt.value   = s;
+                    opt.textContent = label;
+                    sel.appendChild(opt);
+                });
+                if (valorAtual) sel.value = valorAtual;
+                if (novaSlug && !valorAtual) sel.value = novaSlug;
             });
         });
+    }
+    atualizarSelectsTurma(null);
+
+    // toggle orquestrar — escuta turma selecionada
+    if (selOrq) selOrq.addEventListener('change', function() {
+        turmaOrqAtiva = selOrq.value;
+        if (!turmaOrqAtiva) return;
+        onValue(ref(db, CAMINHO + '/turmas/' + turmaOrqAtiva + '/liberacoes/orquestrar'), function(snap) {
+            const toggle = document.getElementById('toggle-orquestrar');
+            if (toggle) toggle.checked = !!snap.val();
+        });
+    });
+
+    const toggleOrq = document.getElementById('toggle-orquestrar');
+    if (toggleOrq) toggleOrq.addEventListener('change', function(e) {
+        if (!turmaOrqAtiva) { alert('Selecione uma turma primeiro.'); toggleOrq.checked = !e.target.checked; return; }
+        set(ref(db, CAMINHO + '/turmas/' + turmaOrqAtiva + '/liberacoes/orquestrar'), e.target.checked);
+    });
+
+    // ---- relatório de acessos ----
+    function carregarRelatorio(filtroTurma) {
+        const lista  = document.getElementById('admin-lista-visitantes');
+        const total  = document.getElementById('admin-total-visitantes');
+        if (!lista) return;
+
+        const caminhoLeitura = filtroTurma
+            ? CAMINHO + '/turmas/' + filtroTurma + '/acessos'
+            : CAMINHO + '/turmas';
+
+        onValue(ref(db, caminhoLeitura), function(snap) {
+            let acessos = {};
+
+            if (filtroTurma) {
+                acessos = snap.val() || {};
+            } else {
+                // agrega todas as turmas
+                const turmasSnap = snap.val() || {};
+                Object.keys(turmasSnap).forEach(function(t) {
+                    const ac = turmasSnap[t].acessos || {};
+                    Object.keys(ac).forEach(function(id) {
+                        acessos[id] = Object.assign({}, ac[id], { turma: t });
+                    });
+                });
+            }
+
+            const ids = Object.keys(acessos).sort(function(a, b) {
+                return (acessos[b].entrada || 0) - (acessos[a].entrada || 0);
+            });
+
+            if (total) total.textContent = '(' + ids.length + ')';
+
+            if (ids.length === 0) {
+                lista.innerHTML = '<p class="admin-vazio">Ainda ninguém acessou.</p>';
+                return;
+            }
+
+            lista.innerHTML = ids.map(function(id) {
+                const v       = acessos[id];
+                const nome    = v.nome || id;
+                const quando  = formatarData(v.entrada);
+                const turmaTag = v.turma && v.turma !== 'sem_turma'
+                    ? '<span class="admin-visitante-turma">' + escapeHtml(v.turma) + '</span>'
+                    : '';
+                const eventos = v.eventos ? Object.values(v.eventos) : [];
+                eventos.sort(function(a, b) { return (a.inicio || 0) - (b.inicio || 0); });
+                const eventosHtml = eventos.length
+                    ? eventos.map(function(ev) {
+                        return '<div class="admin-evento-linha"><span class="admin-evento-titulo">'
+                            + escapeHtml(ev.titulo)
+                            + '</span><span class="admin-evento-duracao">'
+                            + formatarDuracao(ev.duracaoSegundos)
+                            + '</span></div>';
+                    }).join('')
+                    : '<p class="admin-vazio">Ainda não abriu nada.</p>';
+
+                return '<div class="admin-visitante" data-id="' + id + '">'
+                    + '<div class="admin-visitante-cabecalho">'
+                    + '<span class="admin-visitante-nome">' + escapeHtml(nome) + turmaTag + '</span>'
+                    + '<span class="admin-visitante-quando">' + quando + '</span>'
+                    + '</div>'
+                    + '<div class="admin-visitante-eventos">' + eventosHtml + '</div>'
+                    + '</div>';
+            }).join('');
+
+            lista.querySelectorAll('.admin-visitante-cabecalho').forEach(function(cab) {
+                cab.addEventListener('click', function() {
+                    cab.parentElement.classList.toggle('aberto');
+                });
+            });
+        });
+    }
+
+    carregarRelatorio(null);
+
+    if (selRelatorio) selRelatorio.addEventListener('change', function() {
+        carregarRelatorio(selRelatorio.value || null);
     });
 }
 </script>
