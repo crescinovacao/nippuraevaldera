@@ -2148,215 +2148,282 @@
     margin-top: 10px;
 }
 
-/* Painel do consultor (admin) */
-.painel-admin {
+/* ============================================================
+   PAINEL ADMIN — tela cheia, com login
+   ============================================================ */
+#admin-app {
+    display: none;
     position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 360px;
-    max-width: 92vw;
-    z-index: 600;
-    background: var(--branco);
-    box-shadow: -8px 0 30px rgba(0,0,0,0.18);
-    display: flex;
+    inset: 0;
+    z-index: 9000;
+    background: #0a0014;
+    font-family: 'Inter', sans-serif;
+    color: #e8e0f0;
     flex-direction: column;
 }
-.painel-admin-topo {
+#admin-app.ativo { display: flex; }
+
+/* --- tela de login --- */
+#admin-login {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.admin-login-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+}
+.admin-login-logo { height: 32px; margin-bottom: 8px; }
+.admin-login-titulo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #fff;
+}
+.admin-login-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+.admin-login-input {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: #fff;
+    outline: none;
+    text-align: center;
+    letter-spacing: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    width: 100%;
+    box-sizing: border-box;
+}
+.admin-login-input::placeholder { letter-spacing: 0; color: rgba(255,255,255,0.3); }
+.admin-login-input:focus { border-color: #A261E1; }
+.admin-login-btn {
+    background: #2D0051;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.admin-login-btn:hover { background: #A261E1; }
+.admin-login-erro { font-size: 12px; color: #ff6b6b; display: none; }
+
+/* --- dashboard --- */
+#admin-dashboard { display: none; flex-direction: column; height: 100vh; }
+#admin-dashboard.ativo { display: flex; }
+
+.admin-topbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--fundo);
+    gap: 16px;
+    padding: 16px 28px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
     flex-shrink: 0;
 }
-.painel-admin-titulo {
+.admin-topbar-logo { height: 24px; }
+.admin-topbar-titulo {
     font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 15px;
-    color: var(--azul-escuro);
-}
-.painel-admin-fechar {
-    background: var(--fundo);
-    color: var(--azul-escuro);
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-}
-.painel-admin-corpo {
+    color: #fff;
     flex: 1;
-    overflow-y: auto;
-    padding: 20px;
 }
-.painel-admin-secao { margin-bottom: 28px; }
-.painel-admin-secao h3 {
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    color: var(--azul-escuro);
-    margin-bottom: 12px;
-}
-.painel-admin-total {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    font-size: 11px;
-    color: var(--texto);
-    opacity: 0.55;
-}
-.painel-admin-toggle-linha {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--texto);
+.admin-sair-btn {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
     cursor: pointer;
-    padding: 4px 0;
+    font-family: 'Inter', sans-serif;
 }
-.painel-admin-toggle-linha input { width: 18px; height: 18px; cursor: pointer; }
-.painel-admin-nota {
-    font-size: 10.5px;
-    color: var(--texto);
-    opacity: 0.55;
-    margin-top: 8px;
-    line-height: 1.4;
-}
-.admin-vazio {
-    font-size: 12.5px;
-    color: var(--texto);
-    opacity: 0.5;
-    font-style: italic;
-}
-.admin-visitante {
-    border: 1px solid rgba(0,10,40,0.1);
-    border-radius: 12px;
-    margin-bottom: 10px;
+.admin-sair-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.admin-corpo {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px 1fr;
     overflow: hidden;
 }
-.admin-visitante-cabecalho {
+.admin-col-esq {
+    border-right: 1px solid rgba(255,255,255,0.07);
+    overflow-y: auto;
+    padding: 24px 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    background: var(--fundo);
+    flex-direction: column;
+    gap: 28px;
 }
-.admin-visitante-nome {
+.admin-secao-titulo {
     font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    color: var(--azul-escuro);
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: #A261E1;
+    margin-bottom: 14px;
 }
-.admin-visitante-quando {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--texto);
-    opacity: 0.55;
-    white-space: nowrap;
-}
-.admin-visitante-eventos {
-    padding: 10px 14px 14px 14px;
-    display: none;
-}
-.admin-visitante.aberto .admin-visitante-eventos { display: block; }
-.admin-evento-linha {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    font-size: 11.5px;
-    color: var(--texto);
-    padding: 5px 0;
-    border-bottom: 1px solid var(--fundo);
-}
-.admin-evento-linha:last-child { border-bottom: none; }
-.admin-evento-titulo { opacity: 0.85; }
-.painel-admin-gerar-link {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-.painel-admin-gerar-link input {
+.admin-gerar-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.admin-input {
     flex: 1;
-    border: 1px solid rgba(0,10,40,0.15);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     font-size: 12px;
-    font-family: 'Inter', sans-serif;
-    color: var(--texto);
+    color: #fff;
     outline: none;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
 }
-.painel-admin-gerar-link button,
-.admin-link-gerado button {
-    background: var(--azul-escuro);
+.admin-input::placeholder { color: rgba(255,255,255,0.3); }
+.admin-input:focus { border-color: #A261E1; }
+.admin-btn {
+    background: #2D0051;
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 12px;
     font-family: 'Raleway', sans-serif;
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
+    transition: background 0.2s;
 }
-.admin-link-gerado {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-.admin-link-gerado input {
+.admin-btn:hover { background: #A261E1; }
+.admin-btn-sm { padding: 7px 12px; font-size: 11px; }
+.admin-link-box { display: none; flex-direction: column; gap: 6px; margin-top: 2px; }
+.admin-link-row { display: flex; gap: 8px; }
+.admin-link-input {
     flex: 1;
-    border: 1px solid rgba(0,10,40,0.15);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
     padding: 8px 10px;
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
-    color: var(--texto);
-    background: var(--fundo);
+    color: rgba(255,255,255,0.7);
     outline: none;
 }
-.admin-link-copiado {
-    font-size: 11px;
-    color: #009EAA;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-.painel-admin-turma-sel {
+.admin-copiado { font-size: 11px; color: #009EAA; font-weight: 700; display: none; }
+.admin-turma-lista { display: flex; flex-direction: column; gap: 8px; }
+.admin-turma-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
-.painel-admin-turma-sel label {
-    font-size: 12px;
-    color: var(--texto);
-    opacity: 0.7;
-    white-space: nowrap;
+.admin-turma-item:hover, .admin-turma-item.ativa {
+    background: rgba(162,97,225,0.15);
+    border-color: #A261E1;
 }
-.painel-admin-turma-sel select {
+.admin-turma-nome {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
     flex: 1;
-    border: 1px solid rgba(0,10,40,0.15);
+}
+.admin-turma-count {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(255,255,255,0.4);
+}
+.admin-toggle-linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    padding: 4px 0;
+}
+.admin-toggle-linha input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #A261E1; }
+.admin-nota { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.5; margin-top: 6px; }
+
+/* --- relatório --- */
+.admin-col-dir { overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }
+.admin-relatorio-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.admin-relatorio-titulo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+}
+.admin-relatorio-total { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.35); }
+.admin-filtro-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 8px;
-    padding: 6px 8px;
+    padding: 8px 12px;
     font-size: 12px;
+    color: rgba(255,255,255,0.8);
     font-family: 'Inter', sans-serif;
-    color: var(--texto);
-    background: var(--fundo);
     outline: none;
     cursor: pointer;
 }
-.admin-visitante-turma {
+.admin-visitantes-lista { display: flex; flex-direction: column; gap: 8px; }
+.adm-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.adm-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+}
+.adm-card-header:hover { background: rgba(255,255,255,0.03); }
+.adm-card-nome { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 13px; color: #fff; flex: 1; }
+.adm-card-turma {
     font-size: 10px;
     font-family: 'JetBrains Mono', monospace;
-    background: var(--azul-claro);
-    color: var(--azul-escuro);
+    background: rgba(162,97,225,0.2);
+    color: #DEC5FF;
     border-radius: 4px;
-    padding: 1px 5px;
-    margin-left: 6px;
-    opacity: 0.8;
+    padding: 2px 7px;
 }
+.adm-card-quando { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.35); white-space: nowrap; }
+.adm-card-seta { color: rgba(255,255,255,0.3); font-size: 12px; transition: transform 0.2s; }
+.adm-card.aberto .adm-card-seta { transform: rotate(90deg); }
+.adm-card-eventos { display: none; padding: 0 16px 14px 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+.adm-card.aberto .adm-card-eventos { display: block; }
+.adm-evento-linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.adm-evento-linha:last-child { border-bottom: none; }
+.adm-evento-dur { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.3); white-space: nowrap; flex-shrink: 0; }
+.adm-vazio { font-size: 12px; color: rgba(255,255,255,0.25); font-style: italic; padding: 12px 0; }
 
 </style>
 </head>
@@ -5727,55 +5794,88 @@ document.addEventListener('keydown', function(e) {
 
 <!-- PAINEL DO CONSULTOR (admin) — só aparece com ?admin=cresci2026 na
      URL. Deixa liberar o Orquestrar e acompanhar quem acessou o quê. -->
-<div id="painel-admin" class="painel-admin" style="display:none;">
-    <div class="painel-admin-topo">
-        <span class="painel-admin-titulo">Painel do consultor</span>
-        <button id="btn-fechar-admin" class="painel-admin-fechar" aria-label="Fechar">&times;</button>
+<!-- ============================================================
+     PAINEL ADMIN — tela cheia com login
+     Acesse com ?painel na URL para abrir a tela de login
+     ============================================================ -->
+<div id="admin-app">
+
+    <!-- TELA DE LOGIN -->
+    <div id="admin-login">
+        <div class="admin-login-box">
+            <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="admin-login-logo">
+            <p class="admin-login-titulo">Painel do Consultor</p>
+            <p class="admin-login-sub">Universo Nippura &amp; Valdera</p>
+            <input type="password" id="admin-senha-input" class="admin-login-input" placeholder="Senha" autocomplete="off">
+            <button id="admin-login-btn" class="admin-login-btn">Entrar</button>
+            <p id="admin-login-erro" class="admin-login-erro">Senha incorreta. Tente novamente.</p>
+        </div>
     </div>
 
-    <div class="painel-admin-corpo">
-
-        <div class="painel-admin-secao">
-            <h3>Gerar link por turma</h3>
-            <div class="painel-admin-gerar-link">
-                <input type="text" id="admin-input-turma" placeholder="Ex: BTG Outubro 2025" autocomplete="off">
-                <button id="admin-btn-gerar">Gerar link</button>
-            </div>
-            <div id="admin-link-gerado" class="admin-link-gerado" style="display:none;">
-                <input type="text" id="admin-link-texto" readonly>
-                <button id="admin-btn-copiar">Copiar</button>
-            </div>
-            <p id="admin-link-copiado" class="admin-link-copiado" style="display:none;">✓ Copiado!</p>
+    <!-- DASHBOARD (aparece após login) -->
+    <div id="admin-dashboard">
+        <div class="admin-topbar">
+            <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="admin-topbar-logo">
+            <span class="admin-topbar-titulo">Painel do Consultor — Universo Nippura &amp; Valdera</span>
+            <button id="admin-sair-btn" class="admin-sair-btn">Sair</button>
         </div>
 
-        <div class="painel-admin-secao">
-            <h3>Liberar etapas</h3>
-            <div class="painel-admin-turma-sel">
-                <label>Turma:</label>
-                <select id="admin-sel-turma-orq">
-                    <option value="">Selecione uma turma</option>
-                </select>
-            </div>
-            <label class="painel-admin-toggle-linha">
-                <span>Liberar Orquestrar</span>
-                <input type="checkbox" id="toggle-orquestrar">
-            </label>
-            <p class="painel-admin-nota">Aparece na hora pra quem já está com a tela aberta.</p>
-        </div>
+        <div class="admin-corpo">
 
-        <div class="painel-admin-secao">
-            <h3>Quem acessou <span id="admin-total-visitantes" class="painel-admin-total"></span></h3>
-            <div class="painel-admin-turma-sel">
-                <label>Filtrar por turma:</label>
-                <select id="admin-sel-turma-relatorio">
-                    <option value="">Todas as turmas</option>
-                </select>
-            </div>
-            <div id="admin-lista-visitantes" class="admin-lista-visitantes">
-                <p class="admin-vazio">Ainda ninguém acessou.</p>
-            </div>
-        </div>
+            <!-- COL ESQUERDA: ações -->
+            <div class="admin-col-esq">
 
+                <div>
+                    <p class="admin-secao-titulo">Gerar link por turma</p>
+                    <div class="admin-gerar-row">
+                        <input type="text" id="admin-input-turma" class="admin-input" placeholder="Ex: BTG Outubro 2025" autocomplete="off">
+                        <button id="admin-btn-gerar" class="admin-btn">Gerar</button>
+                    </div>
+                    <div id="admin-link-box" class="admin-link-box">
+                        <div class="admin-link-row">
+                            <input type="text" id="admin-link-texto" class="admin-link-input" readonly>
+                            <button id="admin-btn-copiar" class="admin-btn admin-btn-sm">Copiar</button>
+                        </div>
+                        <p id="admin-copiado" class="admin-copiado">✓ Copiado!</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="admin-secao-titulo">Turmas criadas</p>
+                    <div id="admin-turma-lista" class="admin-turma-lista">
+                        <p class="adm-vazio">Nenhuma turma ainda.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="admin-secao-titulo">Liberar Orquestrar</p>
+                    <p id="admin-turma-selecionada-label" class="admin-nota" style="margin-bottom:12px;">Selecione uma turma ao lado para liberar.</p>
+                    <label class="admin-toggle-linha">
+                        <span>Orquestrar liberado</span>
+                        <input type="checkbox" id="toggle-orquestrar">
+                    </label>
+                    <p class="admin-nota">Ativa em tempo real para quem já está com a tela aberta.</p>
+                </div>
+
+            </div>
+
+            <!-- COL DIREITA: relatório -->
+            <div class="admin-col-dir">
+                <div class="admin-relatorio-header">
+                    <div>
+                        <p class="admin-relatorio-titulo">Relatório de acessos</p>
+                        <p id="admin-total-visitantes" class="admin-relatorio-total"></p>
+                    </div>
+                    <select id="admin-sel-turma-relatorio" class="admin-filtro-select">
+                        <option value="">Todas as turmas</option>
+                    </select>
+                </div>
+                <div id="admin-lista-visitantes" class="admin-visitantes-lista">
+                    <p class="adm-vazio">Carregando...</p>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -5809,7 +5909,7 @@ const CAMINHO     = 'nippura-valdera';
 const SENHA_ADMIN = 'cresci2026';
 
 const parametros  = new URLSearchParams(window.location.search);
-const modoAdmin   = parametros.get('admin') === SENHA_ADMIN;
+const modoAdmin   = false; // admin agora tem painel próprio (?painel)
 const turmaParam  = parametros.get('turma') || 'sem_turma';
 const CAMINHO_TURMA = CAMINHO + '/turmas/' + turmaParam;
 
@@ -5854,9 +5954,7 @@ function entrarComoVisitante(nome) {
     });
 }
 
-if (modoAdmin) {
-    if (portao) portao.classList.add('escondido');
-} else if (tentarReconectarVisitante()) {
+if (tentarReconectarVisitante()) {
     if (portao) portao.classList.add('escondido');
 } else {
     const portaoInput = document.getElementById('portao-nome');
@@ -5905,168 +6003,211 @@ onValue(ref(db, CAMINHO_TURMA + '/liberacoes/orquestrar'), function(snap) {
     if (toggle) toggle.checked = liberado;
 });
 
-// ---- painel do consultor ----
-if (modoAdmin) {
-    const painel = document.getElementById('painel-admin');
-    if (painel) painel.style.display = 'flex';
+// ---- painel admin (tela cheia com login) ----
+const modoAdminURL = parametros.has('painel');
 
-    // fechar
-    const btnFechar = document.getElementById('btn-fechar-admin');
-    if (btnFechar) btnFechar.addEventListener('click', function() {
-        painel.style.display = 'none';
+if (modoAdminURL) {
+    // esconde o conteúdo principal e mostra o painel
+    document.querySelectorAll('body > *:not(#admin-app)').forEach(function(el) {
+        el.style.display = 'none';
     });
+    const adminApp = document.getElementById('admin-app');
+    if (adminApp) adminApp.classList.add('ativo');
 
-    // ---- gerar link por turma ----
-    const inputTurma   = document.getElementById('admin-input-turma');
-    const btnGerar     = document.getElementById('admin-btn-gerar');
-    const linkGerado   = document.getElementById('admin-link-gerado');
-    const linkTexto    = document.getElementById('admin-link-texto');
-    const btnCopiar    = document.getElementById('admin-btn-copiar');
-    const linkCopiado  = document.getElementById('admin-link-copiado');
+    // --- login ---
+    const senhaInput  = document.getElementById('admin-senha-input');
+    const loginBtn    = document.getElementById('admin-login-btn');
+    const loginErro   = document.getElementById('admin-login-erro');
+    const loginDiv    = document.getElementById('admin-login');
+    const dashboard   = document.getElementById('admin-dashboard');
 
-    if (btnGerar) btnGerar.addEventListener('click', function() {
-        const nome = inputTurma ? inputTurma.value.trim() : '';
-        if (!nome) return;
-        const slug = slugify(nome);
-        const url  = window.location.origin + window.location.pathname + '?turma=' + slug;
-        if (linkTexto) linkTexto.value = url;
-        if (linkGerado) linkGerado.style.display = 'flex';
-        if (linkCopiado) linkCopiado.style.display = 'none';
-        // registra a turma no Firebase
-        set(ref(db, CAMINHO + '/turmas/' + slug + '/nome'), nome);
-        atualizarSelectsTurma(slug);
-    });
-
-    if (btnCopiar) btnCopiar.addEventListener('click', function() {
-        if (linkTexto) { linkTexto.select(); navigator.clipboard.writeText(linkTexto.value); }
-        if (linkCopiado) { linkCopiado.style.display = 'block'; setTimeout(function() { linkCopiado.style.display = 'none'; }, 2500); }
-    });
-
-    // ---- selects de turma ----
-    const selOrq      = document.getElementById('admin-sel-turma-orq');
-    const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
-    let turmaOrqAtiva = null;
-    let unsub = null;
-
-    function atualizarSelectsTurma(novaSlug) {
-        get(ref(db, CAMINHO + '/turmas')).then(function(snap) {
-            const turmas = snap.val() || {};
-            const slugs  = Object.keys(turmas).sort();
-            [selOrq, selRelatorio].forEach(function(sel, i) {
-                if (!sel) return;
-                const valorAtual = sel.value;
-                // mantém opção padrão
-                sel.innerHTML = i === 0
-                    ? '<option value="">Selecione uma turma</option>'
-                    : '<option value="">Todas as turmas</option>';
-                slugs.forEach(function(s) {
-                    const label = turmas[s].nome || s;
-                    const opt   = document.createElement('option');
-                    opt.value   = s;
-                    opt.textContent = label;
-                    sel.appendChild(opt);
-                });
-                if (valorAtual) sel.value = valorAtual;
-                if (novaSlug && !valorAtual) sel.value = novaSlug;
-            });
-        });
+    function tentarLogin() {
+        const senha = senhaInput ? senhaInput.value.trim() : '';
+        if (senha === SENHA_ADMIN) {
+            if (loginDiv)  loginDiv.style.display  = 'none';
+            if (dashboard) dashboard.classList.add('ativo');
+            iniciarDashboard();
+        } else {
+            if (loginErro) loginErro.style.display = 'block';
+            if (senhaInput) { senhaInput.value = ''; senhaInput.focus(); }
+        }
     }
-    atualizarSelectsTurma(null);
+    if (loginBtn)   loginBtn.addEventListener('click', tentarLogin);
+    if (senhaInput) senhaInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') tentarLogin();
+        if (loginErro) loginErro.style.display = 'none';
+    });
 
-    // toggle orquestrar — escuta turma selecionada
-    if (selOrq) selOrq.addEventListener('change', function() {
-        turmaOrqAtiva = selOrq.value;
-        if (!turmaOrqAtiva) return;
-        onValue(ref(db, CAMINHO + '/turmas/' + turmaOrqAtiva + '/liberacoes/orquestrar'), function(snap) {
-            const toggle = document.getElementById('toggle-orquestrar');
-            if (toggle) toggle.checked = !!snap.val();
+    // sair
+    const sairBtn = document.getElementById('admin-sair-btn');
+    if (sairBtn) sairBtn.addEventListener('click', function() {
+        if (loginDiv)  loginDiv.style.display  = 'flex';
+        if (dashboard) dashboard.classList.remove('ativo');
+        if (senhaInput) senhaInput.value = '';
+    });
+
+    function iniciarDashboard() {
+
+        // --- gerar link ---
+        const inputTurma = document.getElementById('admin-input-turma');
+        const btnGerar   = document.getElementById('admin-btn-gerar');
+        const linkBox    = document.getElementById('admin-link-box');
+        const linkTexto  = document.getElementById('admin-link-texto');
+        const btnCopiar  = document.getElementById('admin-btn-copiar');
+        const copiado    = document.getElementById('admin-copiado');
+
+        if (btnGerar) btnGerar.addEventListener('click', function() {
+            const nome = inputTurma ? inputTurma.value.trim() : '';
+            if (!nome) return;
+            const slug = slugify(nome);
+            const url  = window.location.origin + window.location.pathname + '?turma=' + slug;
+            if (linkTexto) linkTexto.value = url;
+            if (linkBox)   linkBox.style.display = 'flex';
+            if (copiado)   copiado.style.display = 'none';
+            set(ref(db, CAMINHO + '/turmas/' + slug + '/nome'), nome);
+            if (inputTurma) inputTurma.value = '';
         });
-    });
 
-    const toggleOrq = document.getElementById('toggle-orquestrar');
-    if (toggleOrq) toggleOrq.addEventListener('change', function(e) {
-        if (!turmaOrqAtiva) { alert('Selecione uma turma primeiro.'); toggleOrq.checked = !e.target.checked; return; }
-        set(ref(db, CAMINHO + '/turmas/' + turmaOrqAtiva + '/liberacoes/orquestrar'), e.target.checked);
-    });
+        if (btnCopiar) btnCopiar.addEventListener('click', function() {
+            if (linkTexto) { linkTexto.select(); navigator.clipboard.writeText(linkTexto.value); }
+            if (copiado) { copiado.style.display = 'block'; setTimeout(function() { copiado.style.display = 'none'; }, 2500); }
+        });
 
-    // ---- relatório de acessos ----
-    function carregarRelatorio(filtroTurma) {
-        const lista  = document.getElementById('admin-lista-visitantes');
-        const total  = document.getElementById('admin-total-visitantes');
-        if (!lista) return;
+        // --- lista de turmas (col esq) ---
+        let turmaOrqAtiva = null;
 
-        const caminhoLeitura = filtroTurma
-            ? CAMINHO + '/turmas/' + filtroTurma + '/acessos'
-            : CAMINHO + '/turmas';
+        function renderTurmas(turmas) {
+            const lista = document.getElementById('admin-turma-lista');
+            const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
+            if (!lista) return;
+            const slugs = Object.keys(turmas).filter(function(s) { return turmas[s].nome; }).sort();
+            if (slugs.length === 0) {
+                lista.innerHTML = '<p class="adm-vazio">Nenhuma turma ainda.</p>';
+                return;
+            }
+            lista.innerHTML = slugs.map(function(s) {
+                const count = turmas[s].acessos ? Object.keys(turmas[s].acessos).length : 0;
+                return '<div class="admin-turma-item' + (s === turmaOrqAtiva ? ' ativa' : '') + '" data-slug="' + s + '">'
+                    + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
+                    + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
+                    + '</div>';
+            }).join('');
+            lista.querySelectorAll('.admin-turma-item').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    const slug = item.dataset.slug;
+                    lista.querySelectorAll('.admin-turma-item').forEach(function(i) { i.classList.remove('ativa'); });
+                    item.classList.add('ativa');
+                    selecionarTurmaOrq(slug, turmas[slug].nome || slug);
+                });
+            });
+            // atualiza select do relatório
+            if (selRelatorio) {
+                const atual = selRelatorio.value;
+                selRelatorio.innerHTML = '<option value="">Todas as turmas</option>';
+                slugs.forEach(function(s) {
+                    const opt = document.createElement('option');
+                    opt.value = s; opt.textContent = turmas[s].nome || s;
+                    selRelatorio.appendChild(opt);
+                });
+                if (atual) selRelatorio.value = atual;
+            }
+        }
 
-        onValue(ref(db, caminhoLeitura), function(snap) {
+        // escuta todas as turmas em tempo real
+        onValue(ref(db, CAMINHO + '/turmas'), function(snap) {
+            const turmas = snap.val() || {};
+            renderTurmas(turmas);
+            // atualiza relatório se já filtrado
+            const sel = document.getElementById('admin-sel-turma-relatorio');
+            carregarRelatorio(sel ? sel.value || null : null, turmas);
+        });
+
+        // --- orquestrar por turma ---
+        let unsubOrq = null;
+        function selecionarTurmaOrq(slug, nome) {
+            turmaOrqAtiva = slug;
+            const label = document.getElementById('admin-turma-selecionada-label');
+            if (label) label.textContent = 'Turma: ' + nome;
+            if (unsubOrq) unsubOrq();
+            unsubOrq = onValue(ref(db, CAMINHO + '/turmas/' + slug + '/liberacoes/orquestrar'), function(snap) {
+                const toggle = document.getElementById('toggle-orquestrar');
+                if (toggle) toggle.checked = !!snap.val();
+            });
+        }
+        const toggleOrq = document.getElementById('toggle-orquestrar');
+        if (toggleOrq) toggleOrq.addEventListener('change', function(e) {
+            if (!turmaOrqAtiva) {
+                toggleOrq.checked = !e.target.checked;
+                alert('Clique em uma turma primeiro.');
+                return;
+            }
+            set(ref(db, CAMINHO + '/turmas/' + turmaOrqAtiva + '/liberacoes/orquestrar'), e.target.checked);
+        });
+
+        // --- relatório ---
+        function carregarRelatorio(filtroTurma, turmasSnap) {
+            const lista = document.getElementById('admin-lista-visitantes');
+            const total = document.getElementById('admin-total-visitantes');
+            if (!lista) return;
             let acessos = {};
-
-            if (filtroTurma) {
-                acessos = snap.val() || {};
-            } else {
-                // agrega todas as turmas
-                const turmasSnap = snap.val() || {};
+            if (filtroTurma && turmasSnap && turmasSnap[filtroTurma]) {
+                const ac = turmasSnap[filtroTurma].acessos || {};
+                Object.keys(ac).forEach(function(id) {
+                    acessos[id] = Object.assign({}, ac[id], { turma: filtroTurma });
+                });
+            } else if (turmasSnap) {
                 Object.keys(turmasSnap).forEach(function(t) {
-                    const ac = turmasSnap[t].acessos || {};
+                    const ac = (turmasSnap[t] && turmasSnap[t].acessos) || {};
                     Object.keys(ac).forEach(function(id) {
                         acessos[id] = Object.assign({}, ac[id], { turma: t });
                     });
                 });
             }
-
             const ids = Object.keys(acessos).sort(function(a, b) {
                 return (acessos[b].entrada || 0) - (acessos[a].entrada || 0);
             });
-
-            if (total) total.textContent = '(' + ids.length + ')';
-
+            if (total) total.textContent = ids.length + ' acesso' + (ids.length !== 1 ? 's' : '');
             if (ids.length === 0) {
-                lista.innerHTML = '<p class="admin-vazio">Ainda ninguém acessou.</p>';
+                lista.innerHTML = '<p class="adm-vazio">Ainda ninguém acessou.</p>';
                 return;
             }
-
             lista.innerHTML = ids.map(function(id) {
-                const v       = acessos[id];
-                const nome    = v.nome || id;
-                const quando  = formatarData(v.entrada);
+                const v = acessos[id];
+                const nome = v.nome || id;
+                const quando = formatarData(v.entrada);
                 const turmaTag = v.turma && v.turma !== 'sem_turma'
-                    ? '<span class="admin-visitante-turma">' + escapeHtml(v.turma) + '</span>'
-                    : '';
+                    ? '<span class="adm-card-turma">' + escapeHtml(v.turma) + '</span>' : '';
                 const eventos = v.eventos ? Object.values(v.eventos) : [];
                 eventos.sort(function(a, b) { return (a.inicio || 0) - (b.inicio || 0); });
-                const eventosHtml = eventos.length
+                const evHtml = eventos.length
                     ? eventos.map(function(ev) {
-                        return '<div class="admin-evento-linha"><span class="admin-evento-titulo">'
-                            + escapeHtml(ev.titulo)
-                            + '</span><span class="admin-evento-duracao">'
-                            + formatarDuracao(ev.duracaoSegundos)
-                            + '</span></div>';
+                        return '<div class="adm-evento-linha"><span>' + escapeHtml(ev.titulo) + '</span>'
+                            + '<span class="adm-evento-dur">' + formatarDuracao(ev.duracaoSegundos) + '</span></div>';
                     }).join('')
-                    : '<p class="admin-vazio">Ainda não abriu nada.</p>';
-
-                return '<div class="admin-visitante" data-id="' + id + '">'
-                    + '<div class="admin-visitante-cabecalho">'
-                    + '<span class="admin-visitante-nome">' + escapeHtml(nome) + turmaTag + '</span>'
-                    + '<span class="admin-visitante-quando">' + quando + '</span>'
+                    : '<p class="adm-vazio">Ainda não abriu nada.</p>';
+                return '<div class="adm-card">'
+                    + '<div class="adm-card-header">'
+                    + '<span class="adm-card-nome">' + escapeHtml(nome) + '</span>'
+                    + turmaTag
+                    + '<span class="adm-card-quando">' + quando + '</span>'
+                    + '<span class="adm-card-seta">▶</span>'
                     + '</div>'
-                    + '<div class="admin-visitante-eventos">' + eventosHtml + '</div>'
+                    + '<div class="adm-card-eventos">' + evHtml + '</div>'
                     + '</div>';
             }).join('');
+            lista.querySelectorAll('.adm-card-header').forEach(function(h) {
+                h.addEventListener('click', function() { h.parentElement.classList.toggle('aberto'); });
+            });
+        }
 
-            lista.querySelectorAll('.admin-visitante-cabecalho').forEach(function(cab) {
-                cab.addEventListener('click', function() {
-                    cab.parentElement.classList.toggle('aberto');
-                });
+        const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
+        if (selRelatorio) selRelatorio.addEventListener('change', function() {
+            // re-lê do Firebase para ter dados frescos
+            get(ref(db, CAMINHO + '/turmas')).then(function(snap) {
+                carregarRelatorio(selRelatorio.value || null, snap.val() || {});
             });
         });
     }
-
-    carregarRelatorio(null);
-
-    if (selRelatorio) selRelatorio.addEventListener('change', function() {
-        carregarRelatorio(selRelatorio.value || null);
-    });
 }
 </script>
 
