@@ -2061,9 +2061,242 @@
     }
 }
 
+/* Balãozinho "Salvar nas anotações" que aparece perto do texto
+   selecionado dentro do dossiê */
+#grifar-balao {
+    display: none;
+    position: fixed;
+    z-index: 400;
+    transform: translateX(-50%);
+    align-items: center;
+    gap: 6px;
+    background: #2D0051;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 9px 16px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    white-space: nowrap;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+#grifar-balao:hover { background: #3D0068; }
+
+/* Portão de entrada (pede o nome) */
+.portao-entrada {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: #1a0630;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.portao-entrada.escondido { display: none; }
+.portao-caixa {
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+}
+.portao-logo { height: 30px; margin-bottom: 28px; }
+.portao-caixa h2 {
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+.portao-caixa p {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+.portao-input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Aptos', sans-serif;
+    margin-bottom: 14px;
+}
+.portao-input::placeholder { color: rgba(255,255,255,0.45); }
+.portao-input:focus { outline: none; border-color: var(--azul-claro); }
+.portao-btn {
+    width: 100%;
+    background: var(--azul-principal);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.portao-btn:hover { background: var(--azul-hover); }
+.portao-aviso {
+    color: #FF9B9B;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+/* Painel do consultor (admin) */
+.painel-admin {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 360px;
+    max-width: 92vw;
+    z-index: 600;
+    background: var(--branco);
+    box-shadow: -8px 0 30px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+}
+.painel-admin-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--fundo);
+    flex-shrink: 0;
+}
+.painel-admin-titulo {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--azul-escuro);
+}
+.painel-admin-fechar {
+    background: var(--fundo);
+    color: var(--azul-escuro);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+}
+.painel-admin-corpo {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+.painel-admin-secao { margin-bottom: 28px; }
+.painel-admin-secao h3 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--azul-escuro);
+    margin-bottom: 12px;
+}
+.painel-admin-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--texto);
+    opacity: 0.55;
+}
+.painel-admin-toggle-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--texto);
+    cursor: pointer;
+    padding: 4px 0;
+}
+.painel-admin-toggle-linha input { width: 18px; height: 18px; cursor: pointer; }
+.painel-admin-nota {
+    font-size: 10.5px;
+    color: var(--texto);
+    opacity: 0.55;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+.admin-vazio {
+    font-size: 12.5px;
+    color: var(--texto);
+    opacity: 0.5;
+    font-style: italic;
+}
+.admin-visitante {
+    border: 1px solid rgba(0,10,40,0.1);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.admin-visitante-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    background: var(--fundo);
+}
+.admin-visitante-nome {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--azul-escuro);
+}
+.admin-visitante-quando {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--texto);
+    opacity: 0.55;
+    white-space: nowrap;
+}
+.admin-visitante-eventos {
+    padding: 10px 14px 14px 14px;
+    display: none;
+}
+.admin-visitante.aberto .admin-visitante-eventos { display: block; }
+.admin-evento-linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--texto);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--fundo);
+}
+.admin-evento-linha:last-child { border-bottom: none; }
+.admin-evento-titulo { opacity: 0.85; }
+.admin-evento-duracao {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    opacity: 0.5;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 </style>
 </head>
 <body>
+
+<!-- PORTÃO DE ENTRADA: pede o nome antes de mostrar a tela inicial,
+     só pra saber quem está acessando (usado no painel do consultor) -->
+<div id="portao-entrada" class="portao-entrada">
+    <div class="portao-caixa">
+        <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="portao-logo">
+        <h2>Como você se chama?</h2>
+        <p>Só pra sabermos quem está explorando o case.</p>
+        <input type="text" id="portao-nome" class="portao-input" placeholder="Seu nome" maxlength="60" autocomplete="off">
+        <button id="portao-entrar" class="portao-btn">Entrar</button>
+        <p class="portao-aviso" id="portao-aviso" style="display:none;">Digite seu nome pra continuar.</p>
+    </div>
+</div>
 
 <div class="hero">
     <div class="hero-conteudo">
@@ -2078,7 +2311,7 @@
         <div class="hero-botoes">
             <div class="hero-linha">
                 <button class="hero-btn" data-abrir="modal-universo">Artefatos</button>
-                <button class="hero-btn" data-abrir="modal-orquestrar">Orquestrar</button>
+                <button class="hero-btn" data-abrir="modal-orquestrar" id="btn-orquestrar" style="display:none;">Orquestrar</button>
             </div>
         </div>
     </div>
@@ -4217,6 +4450,8 @@ function abrirDetalhe(m, estilo) {
     detalhe.style.display = 'block';
     document.getElementById('btn-voltar-pasta').style.display = 'flex';
     document.querySelector('#modal-universo .modal-box').scrollTop = 0;
+
+    if (window.iniciarRastreio) window.iniciarRastreio('material', m.titulo, m.categoria);
 }
 
 // Força vídeos/áudios incorporados a pararem de tocar (esconder um
@@ -4232,6 +4467,7 @@ function pararMidias(container) {
 }
 
 document.getElementById('btn-voltar-pasta').addEventListener('click', function() {
+    if (window.finalizarRastreio) window.finalizarRastreio();
     if (estadoUniverso === 'detalhe') {
         pararMidias(document.getElementById('material-detalhe'));
         document.getElementById('material-detalhe').style.display = 'none';
@@ -4318,6 +4554,8 @@ var stepOrder = ['missao','investigacao','sintese','decisao'];
 
 function goTo(id) {
 
+  if (window.finalizarRastreio) window.finalizarRastreio();
+
   // Interrompe o ditado antes de trocar de etapa
   pararGravacaoNotas();
 
@@ -4332,7 +4570,12 @@ function goTo(id) {
   el.classList.add('active');
   currentState = id;
   updateProg(id);
-  
+
+  if (window.iniciarRastreio) {
+    var rotulos = { e1:'Orquestrar — Missão', e2:'Orquestrar — Escolha do dossiê', e3:'Orquestrar — Investigação', e5:'Orquestrar — Síntese', e6:'Orquestrar — Registro de decisão', e7:'Orquestrar — Transição' };
+    window.iniciarRastreio('orquestrar', rotulos[id] || ('Orquestrar — ' + id), null);
+  }
+
   // Atualiza o botão de voltar global
   var btnVoltar = document.getElementById('btn-back-global');
   btnVoltar.style.display = (id === 'e1' || id === 'e7') ? 'none' : 'inline-flex';
@@ -5110,6 +5353,91 @@ function salvarBlocoNotas() {
     }
 }
 
+// ============================================================
+// GRIFAR PARA ANOTAR — ao selecionar um trecho de texto dentro do
+// dossiê (evidências ou chat), aparece um balãozinho perto da
+// seleção; clicando nele, o trecho vai pro bloco de notas.
+// ============================================================
+function adicionarTrechoAoBlocoNotas(texto) {
+    if (!blocoNotasTextarea || !texto) return;
+
+    const trechoFormatado = '"' + texto.trim() + '"';
+    const atual = blocoNotasTextarea.value;
+
+    blocoNotasTextarea.value = atual && !atual.endsWith('\n\n')
+        ? atual.replace(/\n*$/, '') + '\n\n' + trechoFormatado
+        : atual + trechoFormatado;
+
+    salvarBlocoNotas();
+    abrirBlocoNotas();
+
+    if (blocoNotasStatus) {
+        blocoNotasStatus.textContent = 'Trecho adicionado ✓';
+        clearTimeout(window._trechoAdicionadoTimer);
+        window._trechoAdicionadoTimer = setTimeout(function() {
+            blocoNotasStatus.textContent = 'Salvo automaticamente';
+        }, 1800);
+    }
+}
+
+let grifarBalao = null;
+let grifarBalaoTexto = '';
+
+function criarGrifarBalao() {
+    if (grifarBalao) return grifarBalao;
+    grifarBalao = document.createElement('button');
+    grifarBalao.id = 'grifar-balao';
+    grifarBalao.type = 'button';
+    grifarBalao.innerHTML = '✎ Salvar nas anotações';
+    document.body.appendChild(grifarBalao);
+    grifarBalao.addEventListener('click', function() {
+        if (grifarBalaoTexto) adicionarTrechoAoBlocoNotas(grifarBalaoTexto);
+        esconderGrifarBalao();
+        const selecao = window.getSelection();
+        if (selecao) selecao.removeAllRanges();
+    });
+    return grifarBalao;
+}
+
+function mostrarGrifarBalao(rect, texto) {
+    const balao = criarGrifarBalao();
+    grifarBalaoTexto = texto;
+    balao.style.display = 'flex';
+    const topo = Math.max(8, rect.top - 42);
+    balao.style.top = topo + 'px';
+    balao.style.left = (rect.left + rect.width / 2) + 'px';
+}
+
+function esconderGrifarBalao() {
+    if (grifarBalao) grifarBalao.style.display = 'none';
+    grifarBalaoTexto = '';
+}
+
+document.addEventListener('mouseup', function(e) {
+    if (e.target.closest('#grifar-balao')) return;
+
+    const areaGrifavel = e.target.closest('.dossie-layout');
+    if (!areaGrifavel || e.target.closest('#orq-notes')) {
+        esconderGrifarBalao();
+        return;
+    }
+
+    const selecao = window.getSelection();
+    const texto = selecao ? selecao.toString().trim() : '';
+    if (texto.length < 4) {
+        esconderGrifarBalao();
+        return;
+    }
+
+    const range = selecao.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    mostrarGrifarBalao(rect, texto);
+});
+
+document.addEventListener('mousedown', function(e) {
+    if (!e.target.closest('#grifar-balao')) esconderGrifarBalao();
+});
+
 function abrirBlocoNotas() {
     if (!blocoNotas) return;
 
@@ -5231,12 +5559,15 @@ function abrirModal(id, filtro) {
 
     if (id === 'modal-orquestrar') {
         abrirBlocoNotasRecolhido();
+        if (window.iniciarRastreio) window.iniciarRastreio('orquestrar', 'Orquestrar — Missão', null);
     }
 }
 
 function fecharModal(id) {
     const overlay = document.getElementById(id);
     if (!overlay) return;
+
+    if (window.finalizarRastreio) window.finalizarRastreio();
 
     if (id === 'modal-orquestrar') {
         pararGravacaoNotas();
@@ -5315,6 +5646,241 @@ document.addEventListener('keydown', function(e) {
         });
     }
 });
+</script>
+
+<!-- PAINEL DO CONSULTOR (admin) — só aparece com ?admin=cresci2026 na
+     URL. Deixa liberar o Orquestrar e acompanhar quem acessou o quê. -->
+<div id="painel-admin" class="painel-admin" style="display:none;">
+    <div class="painel-admin-topo">
+        <span class="painel-admin-titulo">Painel do consultor</span>
+        <button id="btn-fechar-admin" class="painel-admin-fechar" aria-label="Fechar">&times;</button>
+    </div>
+
+    <div class="painel-admin-corpo">
+        <div class="painel-admin-secao">
+            <h3>Liberar etapas</h3>
+            <label class="painel-admin-toggle-linha">
+                <span>Liberar Orquestrar</span>
+                <input type="checkbox" id="toggle-orquestrar">
+            </label>
+            <p class="painel-admin-nota">Aparece na hora pra quem já está com a tela aberta.</p>
+        </div>
+
+        <div class="painel-admin-secao">
+            <h3>Quem acessou <span id="admin-total-visitantes" class="painel-admin-total"></span></h3>
+            <div id="admin-lista-visitantes" class="admin-lista-visitantes">
+                <p class="admin-vazio">Ainda ninguém acessou.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     IDENTIFICAÇÃO, RASTREAMENTO E PAINEL DO CONSULTOR
+     ------------------------------------------------------------
+     Reaproveita a mesma configuração Firebase da Crescimentum, num
+     caminho próprio (nippura-valdera/...) que não interfere em nada
+     dos outros projetos.
+
+     CONSULTOR: acesse este mesmo arquivo com ?admin=cresci2026 no
+     final da URL. Troque a senha abaixo se quiser (SENHA_ADMIN).
+     ============================================================ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB7O-0pxrb_hGKHigkQNdC851fysxl5Z_8",
+    authDomain: "teste-jogo-crescimentum.firebaseapp.com",
+    databaseURL: "https://teste-jogo-crescimentum-default-rtdb.firebaseio.com",
+    projectId: "teste-jogo-crescimentum",
+    storageBucket: "teste-jogo-crescimentum.firebasestorage.app",
+    messagingSenderId: "506040174576",
+    appId: "1:506040174576:web:8dc39cb8243c9947207f35"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const CAMINHO = 'nippura-valdera';
+const SENHA_ADMIN = 'cresci2026';
+
+const parametros = new URLSearchParams(window.location.search);
+const modoAdmin = parametros.get('admin') === SENHA_ADMIN;
+
+function slugify(txt) {
+    return txt.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase();
+}
+
+function escapeHtml(txt) {
+    const d = document.createElement('div');
+    d.textContent = txt || '';
+    return d.innerHTML;
+}
+
+function formatarDuracao(segundos) {
+    if (!segundos) return '';
+    if (segundos < 60) return segundos + 's';
+    const min = Math.floor(segundos / 60);
+    const seg = segundos % 60;
+    return min + 'min' + (seg ? ' ' + seg + 's' : '');
+}
+
+// ------------------------------------------------------------
+// Portão de entrada — pede o nome (não aparece pro consultor)
+// ------------------------------------------------------------
+let visitanteId = null;
+const portao = document.getElementById('portao-entrada');
+
+function tentarReconectarVisitante() {
+    const salvo = sessionStorage.getItem('nv_visitante');
+    if (!salvo) return false;
+    try {
+        const dados = JSON.parse(salvo);
+        visitanteId = dados.id;
+        return true;
+    } catch (e) { return false; }
+}
+
+function entrarComoVisitante(nome) {
+    const nomeLimpo = nome.trim();
+    visitanteId = slugify(nomeLimpo) + '_' + Date.now().toString(36);
+    sessionStorage.setItem('nv_visitante', JSON.stringify({ id: visitanteId, nome: nomeLimpo }));
+    set(ref(db, CAMINHO + '/acessos/' + visitanteId + '/nome'), nomeLimpo);
+    set(ref(db, CAMINHO + '/acessos/' + visitanteId + '/entrada'), Date.now());
+}
+
+if (modoAdmin) {
+    if (portao) portao.classList.add('escondido');
+} else if (tentarReconectarVisitante()) {
+    if (portao) portao.classList.add('escondido');
+} else {
+    const portaoInput = document.getElementById('portao-nome');
+    const portaoBtn = document.getElementById('portao-entrar');
+    const portaoAviso = document.getElementById('portao-aviso');
+
+    function confirmarEntrada() {
+        const nome = portaoInput.value.trim();
+        if (!nome) {
+            portaoAviso.style.display = 'block';
+            return;
+        }
+        entrarComoVisitante(nome);
+        portao.classList.add('escondido');
+    }
+
+    if (portaoBtn) portaoBtn.addEventListener('click', confirmarEntrada);
+    if (portaoInput) portaoInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') confirmarEntrada();
+    });
+}
+
+// ------------------------------------------------------------
+// Rastreamento — o que cada visitante abriu, e por quanto tempo
+// ------------------------------------------------------------
+let eventoAtual = null;
+
+window.iniciarRastreio = function(tipo, titulo, categoria) {
+    window.finalizarRastreio();
+    eventoAtual = { tipo: tipo, titulo: titulo, categoria: categoria || null, inicio: Date.now() };
+};
+
+window.finalizarRastreio = function() {
+    if (!eventoAtual || !visitanteId) { eventoAtual = null; return; }
+    const duracaoSegundos = Math.round((Date.now() - eventoAtual.inicio) / 1000);
+    if (duracaoSegundos >= 1) {
+        push(ref(db, CAMINHO + '/acessos/' + visitanteId + '/eventos'), {
+            tipo: eventoAtual.tipo,
+            titulo: eventoAtual.titulo,
+            categoria: eventoAtual.categoria,
+            inicio: eventoAtual.inicio,
+            duracaoSegundos: duracaoSegundos
+        });
+    }
+    eventoAtual = null;
+};
+
+window.addEventListener('beforeunload', function() { window.finalizarRastreio(); });
+
+// ------------------------------------------------------------
+// Liberar Orquestrar — em tempo real pra quem já está com a tela
+// aberta
+// ------------------------------------------------------------
+onValue(ref(db, CAMINHO + '/liberacoes/orquestrar'), function(snap) {
+    const liberado = !!snap.val();
+    const btnOrq = document.getElementById('btn-orquestrar');
+    if (btnOrq) btnOrq.style.display = liberado ? 'inline-block' : 'none';
+    const toggle = document.getElementById('toggle-orquestrar');
+    if (toggle) toggle.checked = liberado;
+});
+
+// ------------------------------------------------------------
+// Painel do consultor
+// ------------------------------------------------------------
+if (modoAdmin) {
+    const painel = document.getElementById('painel-admin');
+    if (painel) painel.style.display = 'flex';
+
+    const btnFechar = document.getElementById('btn-fechar-admin');
+    if (btnFechar) btnFechar.addEventListener('click', function() {
+        painel.style.display = 'none';
+    });
+
+    const toggleOrq = document.getElementById('toggle-orquestrar');
+    if (toggleOrq) toggleOrq.addEventListener('change', function(e) {
+        set(ref(db, CAMINHO + '/liberacoes/orquestrar'), e.target.checked);
+    });
+
+    onValue(ref(db, CAMINHO + '/acessos'), function(snap) {
+        const dados = snap.val() || {};
+        const lista = document.getElementById('admin-lista-visitantes');
+        const total = document.getElementById('admin-total-visitantes');
+        if (!lista || !total) return;
+
+        const ids = Object.keys(dados).sort(function(a, b) {
+            return (dados[b].entrada || 0) - (dados[a].entrada || 0);
+        });
+        total.textContent = '(' + ids.length + ')';
+
+        if (ids.length === 0) {
+            lista.innerHTML = '<p class="admin-vazio">Ainda ninguém acessou.</p>';
+            return;
+        }
+
+        lista.innerHTML = ids.map(function(id) {
+            const v = dados[id];
+            const nome = v.nome || id;
+            const quando = v.entrada
+                ? new Date(v.entrada).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+                : '';
+            const eventos = v.eventos ? Object.values(v.eventos) : [];
+            eventos.sort(function(a, b) { return (a.inicio || 0) - (b.inicio || 0); });
+
+            const eventosHtml = eventos.length
+                ? eventos.map(function(ev) {
+                    return '<div class="admin-evento-linha"><span class="admin-evento-titulo">' +
+                        escapeHtml(ev.titulo) + '</span><span class="admin-evento-duracao">' +
+                        formatarDuracao(ev.duracaoSegundos) + '</span></div>';
+                }).join('')
+                : '<p class="admin-vazio">Ainda não abriu nada.</p>';
+
+            return '<div class="admin-visitante" data-id="' + id + '">' +
+                '<div class="admin-visitante-cabecalho">' +
+                    '<span class="admin-visitante-nome">' + escapeHtml(nome) + '</span>' +
+                    '<span class="admin-visitante-quando">' + quando + '</span>' +
+                '</div>' +
+                '<div class="admin-visitante-eventos">' + eventosHtml + '</div>' +
+            '</div>';
+        }).join('');
+
+        lista.querySelectorAll('.admin-visitante-cabecalho').forEach(function(cab) {
+            cab.addEventListener('click', function() {
+                cab.parentElement.classList.toggle('aberto');
+            });
+        });
+    });
+}
 </script>
 
 </body>
