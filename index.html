@@ -5999,8 +5999,11 @@ const SENHA_ADMIN = 'cresci2026';
 
 const parametros  = new URLSearchParams(window.location.search);
 const modoAdmin   = false; // admin agora tem painel próprio (?painel)
-const turmaParam  = parametros.get('turma') || 'sem_turma';
-const CAMINHO_TURMA = CAMINHO + '/turmas/' + turmaParam;
+const turmaParam  = parametros.get('turma') || '';
+const CAMINHO_TURMA = CAMINHO + '/turmas/' + (turmaParam || 'sem_turma');
+
+// sem turma na URL = modo livre, sem portão e sem rastreamento
+const modoLivre = !turmaParam;
 
 // ---- helpers ----
 function slugify(txt) {
@@ -6056,7 +6059,10 @@ function entrarComoVisitante(nome) {
     });
 }
 
-if (tentarReconectarVisitante()) {
+if (modoLivre) {
+    // acesso direto sem turma — não rastreia, não mostra portão
+    if (portao) portao.classList.add('escondido');
+} else if (tentarReconectarVisitante()) {
     if (portao) portao.classList.add('escondido');
 } else {
     const portaoInput = document.getElementById('portao-nome');
@@ -6077,11 +6083,12 @@ if (tentarReconectarVisitante()) {
 // ---- rastreamento ----
 let eventoAtual = null;
 window.iniciarRastreio = function(tipo, titulo, categoria) {
+    if (modoLivre) return;
     window.finalizarRastreio();
     eventoAtual = { tipo, titulo, categoria: categoria || null, inicio: Date.now() };
 };
 window.finalizarRastreio = function() {
-    if (!eventoAtual || !visitanteId) { eventoAtual = null; return; }
+    if (modoLivre || !eventoAtual || !visitanteId) { eventoAtual = null; return; }
     const dur = Math.round((Date.now() - eventoAtual.inicio) / 1000);
     if (dur >= 1) {
         push(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId + '/eventos'), {
@@ -6097,13 +6104,20 @@ window.finalizarRastreio = function() {
 window.addEventListener('beforeunload', function() { window.finalizarRastreio(); });
 
 // ---- liberar Orquestrar (escuta a turma do participante) ----
-onValue(ref(db, CAMINHO_TURMA + '/liberacoes/orquestrar'), function(snap) {
-    const liberado = !!snap.val();
+// liberar Orquestrar
+if (modoLivre) {
+    // sem turma: orquestrar sempre visível (modo de teste)
     const btnOrq = document.getElementById('btn-orquestrar');
-    if (btnOrq) btnOrq.style.display = liberado ? 'inline-block' : 'none';
-    const toggle = document.getElementById('toggle-orquestrar');
-    if (toggle) toggle.checked = liberado;
-});
+    if (btnOrq) btnOrq.style.display = 'inline-block';
+} else {
+    onValue(ref(db, CAMINHO_TURMA + '/liberacoes/orquestrar'), function(snap) {
+        const liberado = !!snap.val();
+        const btnOrq = document.getElementById('btn-orquestrar');
+        if (btnOrq) btnOrq.style.display = liberado ? 'inline-block' : 'none';
+        const toggle = document.getElementById('toggle-orquestrar');
+        if (toggle) toggle.checked = liberado;
+    });
+}
 
 // ---- painel admin (tela cheia com login) ----
 const modoAdminURL = parametros.has('painel');
