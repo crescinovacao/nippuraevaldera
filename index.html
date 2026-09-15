@@ -2330,9 +2330,10 @@
 .admin-turma-item-topo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
 }
+.admin-turma-nome { flex: 1; }
 .admin-turma-copiar {
     background: none;
     border: none;
@@ -6364,12 +6365,10 @@ if (modoAdminURL) {
                 return;
             }
             lista.innerHTML = slugs.map(function(s) {
-                const count = turmas[s].acessos ? Object.keys(turmas[s].acessos).length : 0;
                 const orqLiberado = turmas[s].liberacoes && turmas[s].liberacoes.orquestrar;
                 return '<div class="admin-turma-item" data-slug="' + s + '">'
                     + '<div class="admin-turma-item-topo">'
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
-                    + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
                     + '<button class="admin-turma-copiar" data-slug="' + s + '" title="Copiar link">🔗</button>'
                     + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
                     + '</div>'
