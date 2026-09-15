@@ -2338,7 +2338,74 @@
     flex-shrink: 0;
 }
 .admin-turma-copiar:hover { opacity: 1; }
-.admin-turma-item.ativa .admin-turma-copiar { filter: brightness(10); }
+.admin-turma-excluir {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+.admin-turma-excluir:hover { opacity: 1; }
+.admin-turma-item.ativa .admin-turma-copiar,
+.admin-turma-item.ativa .admin-turma-excluir { filter: brightness(10); }
+
+/* modal de confirmação de exclusão */
+#admin-confirm-excluir {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(45,0,81,0.55);
+    align-items: center;
+    justify-content: center;
+}
+#admin-confirm-excluir.ativo { display: flex; }
+.admin-confirm-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.admin-confirm-icone { font-size: 32px; }
+.admin-confirm-titulo { font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 17px; color: #2D0051; }
+.admin-confirm-desc { font-size: 13px; color: #666; line-height: 1.5; }
+.admin-confirm-aviso { font-size: 12px; color: #c0392b; font-weight: 700; }
+.admin-confirm-btns { display: flex; gap: 10px; margin-top: 8px; }
+.admin-confirm-cancelar {
+    flex: 1;
+    background: #f5f0fb;
+    color: #2D0051;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+.admin-confirm-excluir-btn {
+    flex: 1;
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.admin-confirm-excluir-btn:hover { background: #96281b; }
 .admin-turma-count { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #A261E1; }
 .admin-toggle-linha {
     display: flex;
@@ -5785,6 +5852,20 @@ document.addEventListener('keydown', function(e) {
 
 <!-- PAINEL DO CONSULTOR (admin) — só aparece com ?admin=cresci2026 na
      URL. Deixa liberar o Orquestrar e acompanhar quem acessou o quê. -->
+<!-- Modal confirmação excluir turma -->
+<div id="admin-confirm-excluir">
+    <div class="admin-confirm-box">
+        <div class="admin-confirm-icone">🗑</div>
+        <p class="admin-confirm-titulo">Excluir turma?</p>
+        <p class="admin-confirm-desc">Você está prestes a excluir a turma <strong id="admin-confirm-nome-turma"></strong> e todos os dados de acesso associados.</p>
+        <p class="admin-confirm-aviso">⚠ Essa ação não pode ser desfeita.</p>
+        <div class="admin-confirm-btns">
+            <button class="admin-confirm-cancelar" onclick="document.getElementById('admin-confirm-excluir').classList.remove('ativo')">Cancelar</button>
+            <button class="admin-confirm-excluir-btn" id="admin-confirm-excluir-ok">Excluir</button>
+        </div>
+    </div>
+</div>
+
 <!-- ============================================================
      PAINEL ADMIN — tela cheia com login
      Acesse com ?painel na URL para abrir a tela de login
@@ -6082,6 +6163,29 @@ if (modoAdminURL) {
             return Object.assign({}, lsTurmas(), firebaseTurmas || {});
         }
 
+        // --- excluir turma ---
+        window.confirmarExcluirTurma = function(slug, nome) {
+            const modal = document.getElementById('admin-confirm-excluir');
+            const nomeEl = document.getElementById('admin-confirm-nome-turma');
+            const btnOk  = document.getElementById('admin-confirm-excluir-ok');
+            if (!modal || !btnOk) return;
+            if (nomeEl) nomeEl.textContent = '"' + nome + '"';
+            modal.classList.add('ativo');
+            btnOk.onclick = function() {
+                modal.classList.remove('ativo');
+                // remove do Firebase
+                set(ref(db, CAMINHO + '/turmas/' + slug), null)
+                    .then(function() {
+                        // remove do localStorage
+                        const ls = lsTurmas();
+                        delete ls[slug];
+                        localStorage.setItem(LS_KEY, JSON.stringify(ls));
+                        renderTurmas(lsMergir({}));
+                    })
+                    .catch(function(e) { alert('Erro ao excluir: ' + e.message); });
+            };
+        };
+
         // --- gerar link ---
         const inputTurma = document.getElementById('admin-input-turma');
         const btnGerar   = document.getElementById('admin-btn-gerar');
@@ -6138,6 +6242,7 @@ if (modoAdminURL) {
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
                     + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
                     + '<button class="admin-turma-copiar" title="Copiar link" onclick="event.stopPropagation();navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'✓\';setTimeout(()=>this.textContent=\'🔗\',1500)">🔗</button>'
+                    + '<button class="admin-turma-excluir" title="Excluir turma" data-slug="' + s + '" data-nome="' + escapeHtml(turmas[s].nome || s) + '" onclick="event.stopPropagation();confirmarExcluirTurma(this.dataset.slug, this.dataset.nome)">🗑</button>'
                     + '</div>';
             }).join('');
             lista.querySelectorAll('.admin-turma-item').forEach(function(item) {
