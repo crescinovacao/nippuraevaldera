@@ -5838,6 +5838,7 @@ document.addEventListener('keydown', function(e) {
                         </div>
                         <p id="admin-copiado" class="admin-copiado">✓ Copiado!</p>
                     </div>
+                    <p id="admin-status-fb" style="display:none;font-size:11px;margin-top:6px;"></p>
                 </div>
 
                 <div>
@@ -5893,13 +5894,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, set, onValue, push, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB_amk-VFel56J4XG8YORjoRX_r0W6lTUg",
-    authDomain: "crescimentum-dinamicas.firebaseapp.com",
-    databaseURL: "https://crescimentum-dinamicas-default-rtdb.firebaseio.com",
-    projectId: "crescimentum-dinamicas",
-    storageBucket: "crescimentum-dinamicas.firebasestorage.app",
-    messagingSenderId: "53012299693",
-    appId: "1:53012299693:web:a53852de0d699a42a3ab24"
+    apiKey: "AIzaSyANE-DpfsTbL1nN4MW9B9jbpryV5wVUOSE",
+    authDomain: "crescimentum-dinamicas-1c4c0.firebaseapp.com",
+    databaseURL: "https://crescimentum-dinamicas-1c4c0-default-rtdb.firebaseio.com",
+    projectId: "crescimentum-dinamicas-1c4c0",
+    storageBucket: "crescimentum-dinamicas-1c4c0.firebasestorage.app",
+    messagingSenderId: "1070902570545",
+    appId: "1:1070902570545:web:1d51c62060ef6ab958ef10"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -6047,6 +6048,20 @@ if (modoAdminURL) {
     });
 
     function iniciarDashboard() {
+        const LS_KEY = 'nv_turmas_admin';
+
+        // --- helpers localStorage ---
+        function lsTurmas() {
+            try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { return {}; }
+        }
+        function lsSalvarTurma(slug, nome) {
+            const t = lsTurmas(); t[slug] = { nome: nome }; 
+            localStorage.setItem(LS_KEY, JSON.stringify(t));
+        }
+        function lsMergir(firebaseTurmas) {
+            // une Firebase + localStorage, Firebase tem prioridade
+            return Object.assign({}, lsTurmas(), firebaseTurmas || {});
+        }
 
         // --- gerar link ---
         const inputTurma = document.getElementById('admin-input-turma');
@@ -6055,6 +6070,7 @@ if (modoAdminURL) {
         const linkTexto  = document.getElementById('admin-link-texto');
         const btnCopiar  = document.getElementById('admin-btn-copiar');
         const copiado    = document.getElementById('admin-copiado');
+        const statusFb   = document.getElementById('admin-status-fb');
 
         if (btnGerar) btnGerar.addEventListener('click', function() {
             const nome = inputTurma ? inputTurma.value.trim() : '';
@@ -6064,7 +6080,18 @@ if (modoAdminURL) {
             if (linkTexto) linkTexto.value = url;
             if (linkBox)   linkBox.style.display = 'flex';
             if (copiado)   copiado.style.display = 'none';
-            set(ref(db, CAMINHO + '/turmas/' + slug + '/nome'), nome);
+            // salva localmente imediatamente
+            lsSalvarTurma(slug, nome);
+            renderTurmas(lsMergir({}));
+            // tenta salvar no Firebase
+            set(ref(db, CAMINHO + '/turmas/' + slug + '/nome'), nome)
+                .then(function() {
+                    if (statusFb) { statusFb.textContent = '✓ Salvo no Firebase'; statusFb.style.color = '#009EAA'; statusFb.style.display = 'block'; setTimeout(function() { statusFb.style.display = 'none'; }, 3000); }
+                })
+                .catch(function(err) {
+                    if (statusFb) { statusFb.textContent = '⚠ Sem permissão no Firebase — turma salva localmente'; statusFb.style.color = '#ffb93e'; statusFb.style.display = 'block'; }
+                    console.warn('Firebase write error:', err);
+                });
             if (inputTurma) inputTurma.value = '';
         });
 
@@ -6113,13 +6140,30 @@ if (modoAdminURL) {
             }
         }
 
-        // escuta todas as turmas em tempo real
+        // escuta todas as turmas em tempo real + merge com localStorage
+        renderTurmas(lsMergir({})); // renderiza imediatamente do localStorage
+
+        // timeout para detectar falha de conexão com Firebase
+        const lista = document.getElementById('admin-lista-visitantes');
+        let fbConectou = false;
+        setTimeout(function() {
+            if (!fbConectou && lista && lista.textContent.includes('Carregando')) {
+                lista.innerHTML = '<p class="adm-vazio" style="color:#ffb93e;">⚠ Firebase sem permissão de leitura. Atualize as regras no console do Firebase e recarregue a página.</p>';
+                const statusFb = document.getElementById('admin-status-fb');
+                if (statusFb) { statusFb.textContent = '⚠ Firebase sem permissão — verifique as regras'; statusFb.style.color = '#ffb93e'; statusFb.style.display = 'block'; }
+            }
+        }, 4000);
+
         onValue(ref(db, CAMINHO + '/turmas'), function(snap) {
-            const turmas = snap.val() || {};
+            fbConectou = true;
+            const firebaseTurmas = snap.val() || {};
+            Object.keys(firebaseTurmas).forEach(function(s) {
+                if (firebaseTurmas[s].nome) lsSalvarTurma(s, firebaseTurmas[s].nome);
+            });
+            const turmas = lsMergir(firebaseTurmas);
             renderTurmas(turmas);
-            // atualiza relatório se já filtrado
             const sel = document.getElementById('admin-sel-turma-relatorio');
-            carregarRelatorio(sel ? sel.value || null : null, turmas);
+            carregarRelatorio(sel ? sel.value || null : null, firebaseTurmas);
         });
 
         // --- orquestrar por turma ---
