@@ -6109,6 +6109,12 @@ if (modoAdminURL) {
                     lista.querySelectorAll('.admin-turma-item').forEach(function(i) { i.classList.remove('ativa'); });
                     item.classList.add('ativa');
                     selecionarTurmaOrq(slug, turmas[slug].nome || slug);
+                    // filtra o relatório para essa turma
+                    const sel = document.getElementById('admin-sel-turma-relatorio');
+                    if (sel) { sel.value = slug; }
+                    get(ref(db, CAMINHO + '/turmas')).then(function(snap) {
+                        carregarRelatorio(slug, snap.val() || {});
+                    });
                 });
             });
             // atualiza select do relatório
