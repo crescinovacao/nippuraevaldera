@@ -5665,7 +5665,7 @@ function esconderGrifarBalao() {
 document.addEventListener('mouseup', function(e) {
     if (e.target.closest('#grifar-balao')) return;
 
-    const areaGrifavel = e.target.closest('.dossie-layout');
+    const areaGrifavel = e.target.closest('.dossie-layout, #material-detalhe-conteudo');
     if (!areaGrifavel || e.target.closest('#orq-notes')) {
         esconderGrifarBalao();
         return;
