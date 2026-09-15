@@ -6333,6 +6333,15 @@ if (modoAdminURL) {
                             var ls = lsTurmas();
                             delete ls[slug];
                             localStorage.setItem(LS_KEY, JSON.stringify(ls));
+                            // atualiza a UI imediatamente, sem esperar o listener do Firebase
+                            var turmasAtualizadas = Object.assign({}, turmas);
+                            delete turmasAtualizadas[slug];
+                            renderTurmas(lsMergir(turmasAtualizadas));
+                            if (turmaOrqAtiva === slug) {
+                                turmaOrqAtiva = null;
+                                var label = document.getElementById('admin-turma-selecionada-label');
+                                if (label) label.textContent = 'Selecione uma turma ao lado para liberar.';
+                            }
                         })
                         .catch(function(err) { alert('Erro ao excluir: ' + err.message); });
                 });
@@ -6486,6 +6495,16 @@ if (modoAdminURL) {
                     var ok = window.confirm('Excluir este acesso?\nEssa ação não pode ser desfeita.');
                     if (!ok) return;
                     set(ref(db, CAMINHO + '/turmas/' + turma + '/acessos/' + id), null)
+                        .then(function() {
+                            // remove localmente e re-renderiza sem esperar o listener
+                            var turmasSnapAtualizado = Object.assign({}, turmasSnap);
+                            if (turmasSnapAtualizado[turma] && turmasSnapAtualizado[turma].acessos) {
+                                var acessosAtualizados = Object.assign({}, turmasSnapAtualizado[turma].acessos);
+                                delete acessosAtualizados[id];
+                                turmasSnapAtualizado[turma] = Object.assign({}, turmasSnapAtualizado[turma], { acessos: acessosAtualizados });
+                            }
+                            carregarRelatorio(filtroTurma, turmasSnapAtualizado);
+                        })
                         .catch(function(err) { alert('Erro: ' + err.message); });
                 });
             });
