@@ -1840,8 +1840,7 @@
     display: flex;
     flex-direction: column;
     background: #FFFFFF;
-    border: 1px solid rgba(0,10,40,0.12);
-    box-shadow: 0 -4px 20px rgba(45,0,81,0.14);
+    box-shadow: 0 -4px 24px rgba(45,0,81,0.18);
     overflow: hidden;
 
     position: fixed;
@@ -1863,6 +1862,10 @@
    ============================================================ */
 /* O bloco flutua por cima do conteúdo, encostado no canto — não
    empurra nem redimensiona o modal, igual ao chat do LinkedIn. */
+
+#orq-notes:not(.recolhido) {
+    height: min(520px, calc(100vh - 32px));
+}
 
 #modal-orquestrar.notas-abertas #orq-notes {
     display: flex;
