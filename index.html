@@ -235,8 +235,8 @@
         border-bottom: 1px solid rgba(0,10,40,0.08);
     }
     .modal-header.header-branco .modal-header-titulo { color: #210000; }
-    .modal-header.header-branco .btn-voltar { background: var(--azul-principal); color: #fff; }
-    .modal-header.header-branco .modal-close { background: var(--azul-principal); color: #fff; }
+    .modal-header.header-branco .btn-voltar { background: #F0EDF2; color: #555; }
+    .modal-header.header-branco .modal-close { background: #F0EDF2; color: #555; }
     .modal-header-titulo {
         position: absolute;
         left: 0;
@@ -2625,7 +2625,7 @@
 
 <div class="modal-overlay" id="modal-universo">
     <div class="modal-box">
-        <div class="modal-header" id="modal-universo-header">
+        <div class="modal-header header-branco" id="modal-universo-header">
             <button class="btn-voltar" id="btn-voltar-pasta" style="display:none;">Voltar</button>
             <h2 class="modal-header-titulo" id="modal-universo-titulo">Artefatos</h2>
             <button class="modal-close" data-fechar="modal-universo" aria-label="Fechar">&times;</button>
@@ -4682,8 +4682,6 @@ function mostrarCategorias() {
     estadoUniverso = 'categorias';
     aplicarTemaCategoria(null);
     document.getElementById('modal-universo-titulo').textContent = 'Artefatos';
-    var headerUniverso = document.getElementById('modal-universo-header');
-    if (headerUniverso) headerUniverso.classList.remove('header-branco');
 
     const grid = document.getElementById('categoria-picker');
     grid.innerHTML = '';
@@ -4739,7 +4737,6 @@ function abrirDetalhe(m, estilo) {
     estadoUniverso = 'detalhe';
     document.getElementById('pasta-grid').style.display = 'none';
     document.getElementById('modal-universo-titulo').textContent = m.titulo;
-    document.getElementById('modal-universo-header').classList.add('header-branco');
 
     document.getElementById('material-detalhe-conteudo').innerHTML =
         '<div class="detalhe-corpo">' + conteudoDetalhe(m, estilo) + '</div>';
@@ -4771,7 +4768,6 @@ document.getElementById('btn-voltar-pasta').addEventListener('click', function()
         document.getElementById('material-detalhe').style.display = 'none';
         document.getElementById('pasta-grid').style.display = 'grid';
         document.getElementById('modal-universo-titulo').textContent = TITULOS_CATEGORIA[categoriaAtualPastas] || 'Artefatos';
-        document.getElementById('modal-universo-header').classList.remove('header-branco');
         estadoUniverso = 'pastas';
     } else if (estadoUniverso === 'pastas') {
         mostrarCategorias();
