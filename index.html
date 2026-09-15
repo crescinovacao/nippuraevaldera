@@ -6,6 +6,8 @@
 <title>Universo Nippura & Valdera</title>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&family=Aptos:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -6657,18 +6659,23 @@ if (modoAdminURL) {
                 el.innerHTML = html;
                 document.body.appendChild(el);
 
-                html2canvas(el, { scale: 2, useCORS: true, allowTaint: true, scrollX: 0, scrollY: 0, width: 794, windowWidth: 794 }).then(function(canvas) {
-                    var imgData = canvas.toDataURL('image/jpeg', 0.98);
-                    var pdfWidthMM = 210; // A4
-                    var pdfHeightMM = canvas.height * pdfWidthMM / canvas.width;
-                    var pdf = new window.jspdf.jsPDF({ unit: 'mm', format: [pdfWidthMM, pdfHeightMM] });
-                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidthMM, pdfHeightMM);
-                    pdf.save('relatorio-' + (filtro || 'todas-turmas') + '.pdf');
+                try {
+                    html2canvas(el, { scale: 2, useCORS: true, allowTaint: true, scrollX: 0, scrollY: 0, width: 794, windowWidth: 794 }).then(function(canvas) {
+                        var imgData = canvas.toDataURL('image/jpeg', 0.98);
+                        var pdfWidthMM = 210; // A4
+                        var pdfHeightMM = canvas.height * pdfWidthMM / canvas.width;
+                        var pdf = new window.jspdf.jsPDF({ unit: 'mm', format: [pdfWidthMM, pdfHeightMM] });
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidthMM, pdfHeightMM);
+                        pdf.save('relatorio-' + (filtro || 'todas-turmas') + '.pdf');
+                        document.body.removeChild(el);
+                    }).catch(function(err) {
+                        alert('Erro ao gerar PDF: ' + err.message);
+                        document.body.removeChild(el);
+                    });
+                } catch (err) {
+                    alert('Erro ao iniciar geração do PDF: ' + err.message);
                     document.body.removeChild(el);
-                }).catch(function(err) {
-                    alert('Erro ao gerar PDF: ' + err.message);
-                    document.body.removeChild(el);
-                });
+                }
             });
         });
     }
