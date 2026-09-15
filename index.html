@@ -6479,14 +6479,26 @@ if (modoAdminURL) {
                 const turmaTag = v.turma && v.turma !== 'sem_turma'
                     ? '<span class="adm-card-turma">' + escapeHtml(v.turma) + '</span>' : '';
                 const eventos = v.eventos ? Object.values(v.eventos) : [];
-                eventos.sort(function(a, b) { return (a.inicio || 0) - (b.inicio || 0); });
                 const TOTAL_ARTEFATOS = 19;
                 const unicos = new Set(eventos.map(function(ev) { return ev.titulo; })).size;
                 const pct = Math.min(100, Math.round((unicos / TOTAL_ARTEFATOS) * 100));
-                const evHtml = eventos.length
-                    ? eventos.map(function(ev) {
-                        return '<div class="adm-evento-linha"><span>' + escapeHtml(ev.titulo) + '</span>'
-                            + '<span class="adm-evento-dur">' + formatarDuracao(ev.duracaoSegundos) + '</span></div>';
+                // agrega por título: soma duração total, conta quantas vezes abriu
+                const agregados = {};
+                eventos.forEach(function(ev) {
+                    if (!agregados[ev.titulo]) agregados[ev.titulo] = { vezes: 0, duracaoTotal: 0, primeiraAbertura: ev.inicio || 0 };
+                    agregados[ev.titulo].vezes++;
+                    agregados[ev.titulo].duracaoTotal += (ev.duracaoSegundos || 0);
+                    if ((ev.inicio || 0) < agregados[ev.titulo].primeiraAbertura) agregados[ev.titulo].primeiraAbertura = ev.inicio;
+                });
+                const titulosOrdenados = Object.keys(agregados).sort(function(a, b) {
+                    return agregados[a].primeiraAbertura - agregados[b].primeiraAbertura;
+                });
+                const evHtml = titulosOrdenados.length
+                    ? titulosOrdenados.map(function(titulo) {
+                        var ag = agregados[titulo];
+                        var vezesTxt = ag.vezes > 1 ? ' · ' + ag.vezes + 'x' : '';
+                        return '<div class="adm-evento-linha"><span>' + escapeHtml(titulo) + vezesTxt + '</span>'
+                            + '<span class="adm-evento-dur">' + formatarDuracao(ag.duracaoTotal) + '</span></div>';
                     }).join('')
                     : '<p class="adm-vazio">Ainda não abriu nada.</p>';
                 const notasHtml = v.notas && v.notas.trim()
