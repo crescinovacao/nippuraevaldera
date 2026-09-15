@@ -6237,14 +6237,53 @@ if (modoAdminURL) {
             }
             lista.innerHTML = slugs.map(function(s) {
                 const count = turmas[s].acessos ? Object.keys(turmas[s].acessos).length : 0;
-                const url = window.location.origin + window.location.pathname + '?turma=' + s;
-                return '<div class="admin-turma-item' + (s === turmaOrqAtiva ? ' ativa' : '') + '" data-slug="' + s + '" data-url="' + url + '">'
+                return '<div class="admin-turma-item' + (s === turmaOrqAtiva ? ' ativa' : '') + '" data-slug="' + s + '">'
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
                     + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
-                    + '<button class="admin-turma-copiar" title="Copiar link" onclick="event.stopPropagation();navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'✓\';setTimeout(()=>this.textContent=\'🔗\',1500)">🔗</button>'
-                    + '<button class="admin-turma-excluir" title="Excluir turma" data-slug="' + s + '" data-nome="' + escapeHtml(turmas[s].nome || s) + '" onclick="event.stopPropagation();confirmarExcluirTurma(this.dataset.slug, this.dataset.nome)">🗑</button>'
+                    + '<button class="admin-turma-copiar" data-slug="' + s + '" title="Copiar link">🔗</button>'
+                    + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma">🗑</button>'
                     + '</div>';
             }).join('');
+
+            // copiar link
+            lista.querySelectorAll('.admin-turma-copiar').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var slug = btn.dataset.slug;
+                    var url = window.location.origin + window.location.pathname + '?turma=' + slug;
+                    navigator.clipboard.writeText(url);
+                    btn.textContent = '✓';
+                    setTimeout(function() { btn.textContent = '🔗'; }, 1500);
+                });
+            });
+
+            // excluir turma
+            lista.querySelectorAll('.admin-turma-excluir').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var slug = btn.dataset.slug;
+                    var nome = turmas[slug] ? (turmas[slug].nome || slug) : slug;
+                    var modal  = document.getElementById('admin-confirm-excluir');
+                    var nomeEl = document.getElementById('admin-confirm-nome-turma');
+                    var btnOk  = document.getElementById('admin-confirm-excluir-ok');
+                    if (!modal || !btnOk) return;
+                    if (nomeEl) nomeEl.textContent = '"' + nome + '"';
+                    modal.classList.add('ativo');
+                    // clona o botão para remover listeners antigos
+                    var novo = btnOk.cloneNode(true);
+                    btnOk.parentNode.replaceChild(novo, btnOk);
+                    novo.addEventListener('click', function() {
+                        modal.classList.remove('ativo');
+                        set(ref(db, CAMINHO + '/turmas/' + slug), null)
+                            .then(function() {
+                                var ls = lsTurmas();
+                                delete ls[slug];
+                                localStorage.setItem(LS_KEY, JSON.stringify(ls));
+                            })
+                            .catch(function(err) { alert('Erro ao excluir: ' + err.message); });
+                    });
+                });
+            });
             lista.querySelectorAll('.admin-turma-item').forEach(function(item) {
                 item.addEventListener('click', function() {
                     const slug = item.dataset.slug;
