@@ -2342,18 +2342,16 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 14px;
-    padding: 2px 6px;
+    padding: 3px 5px;
     border-radius: 4px;
-    opacity: 1;
     color: #c0392b;
-    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
     flex-shrink: 0;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
 }
-.admin-turma-excluir:hover { background: rgba(192,57,43,0.1); }
+.admin-turma-excluir:hover { opacity: 1; background: rgba(192,57,43,0.1); }
 .admin-turma-item.ativa .admin-turma-excluir { color: rgba(255,180,180,0.9); }
 
 /* modal de confirmação de exclusão */
@@ -6204,7 +6202,7 @@ if (modoAdminURL) {
             const slug = slugify(nome);
             const url  = window.location.origin + window.location.pathname + '?turma=' + slug;
             if (linkTexto) linkTexto.value = url;
-            if (linkBox)   linkBox.style.display = 'flex';
+            if (linkBox)   linkBox.style.display = 'none';
             if (copiado)   copiado.style.display = 'none';
             // salva localmente imediatamente
             lsSalvarTurma(slug, nome);
@@ -6244,7 +6242,7 @@ if (modoAdminURL) {
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
                     + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
                     + '<button class="admin-turma-copiar" data-slug="' + s + '" title="Copiar link">🔗</button>'
-                    + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma">Excluir</button>'
+                    + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
                     + '</div>';
             }).join('');
 
