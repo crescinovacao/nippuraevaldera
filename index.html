@@ -2343,15 +2343,18 @@
     border: none;
     cursor: pointer;
     font-size: 14px;
-    padding: 2px 4px;
+    padding: 2px 6px;
     border-radius: 4px;
-    opacity: 0.4;
-    transition: opacity 0.2s;
+    opacity: 1;
+    color: #c0392b;
+    transition: background 0.2s;
     flex-shrink: 0;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
 }
-.admin-turma-excluir:hover { opacity: 1; }
-.admin-turma-item.ativa .admin-turma-copiar,
-.admin-turma-item.ativa .admin-turma-excluir { filter: brightness(10); }
+.admin-turma-excluir:hover { background: rgba(192,57,43,0.1); }
+.admin-turma-item.ativa .admin-turma-excluir { color: rgba(255,180,180,0.9); }
 
 /* modal de confirmação de exclusão */
 #admin-confirm-excluir {
@@ -6241,7 +6244,7 @@ if (modoAdminURL) {
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
                     + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
                     + '<button class="admin-turma-copiar" data-slug="' + s + '" title="Copiar link">🔗</button>'
-                    + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma">🗑</button>'
+                    + '<button class="admin-turma-excluir" data-slug="' + s + '" title="Excluir turma">Excluir</button>'
                     + '</div>';
             }).join('');
 
@@ -6263,25 +6266,15 @@ if (modoAdminURL) {
                     e.stopPropagation();
                     var slug = btn.dataset.slug;
                     var nome = turmas[slug] ? (turmas[slug].nome || slug) : slug;
-                    var modal  = document.getElementById('admin-confirm-excluir');
-                    var nomeEl = document.getElementById('admin-confirm-nome-turma');
-                    var btnOk  = document.getElementById('admin-confirm-excluir-ok');
-                    if (!modal || !btnOk) return;
-                    if (nomeEl) nomeEl.textContent = '"' + nome + '"';
-                    modal.classList.add('ativo');
-                    // clona o botão para remover listeners antigos
-                    var novo = btnOk.cloneNode(true);
-                    btnOk.parentNode.replaceChild(novo, btnOk);
-                    novo.addEventListener('click', function() {
-                        modal.classList.remove('ativo');
-                        set(ref(db, CAMINHO + '/turmas/' + slug), null)
-                            .then(function() {
-                                var ls = lsTurmas();
-                                delete ls[slug];
-                                localStorage.setItem(LS_KEY, JSON.stringify(ls));
-                            })
-                            .catch(function(err) { alert('Erro ao excluir: ' + err.message); });
-                    });
+                    var ok = window.confirm('Excluir a turma "' + nome + '"?\n\nTodos os dados de acesso serão apagados.\nEssa ação não pode ser desfeita.');
+                    if (!ok) return;
+                    set(ref(db, CAMINHO + '/turmas/' + slug), null)
+                        .then(function() {
+                            var ls = lsTurmas();
+                            delete ls[slug];
+                            localStorage.setItem(LS_KEY, JSON.stringify(ls));
+                        })
+                        .catch(function(err) { alert('Erro ao excluir: ' + err.message); });
                 });
             });
             lista.querySelectorAll('.admin-turma-item').forEach(function(item) {
