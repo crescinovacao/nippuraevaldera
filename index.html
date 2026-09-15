@@ -6288,6 +6288,8 @@ if (modoAdminURL) {
         function getNome(v, id) {
             return (v && v.nome) || (id ? id.replace(/_[a-z0-9]+$/i, '') : '?');
         }
+
+        function renderTurmas(turmas) {
             const lista = document.getElementById('admin-turma-lista');
             const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
             if (!lista) return;
