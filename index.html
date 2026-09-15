@@ -6623,7 +6623,7 @@ if (modoAdminURL) {
                     return linha(escapeHtml(pnome), unicos + '/' + TODOS_ARTEFATOS.length + ' artefatos (' + pct + '%)') + notaHtml;
                 }).join('');
 
-                const html = '<div style="font-family:sans-serif;background:#fff;width:750px;">'
+                const html = '<div style="font-family:sans-serif;background:#fff;width:794px;">'
                     + '<div style="background:' + cor + ';padding:22px 32px;text-align:center;">'
                     + '<img crossorigin="anonymous" src="https://i.imgur.com/fUPVKmL.png" style="height:28px;" alt="Crescimentum">'
                     + '</div>'
@@ -6653,13 +6653,13 @@ if (modoAdminURL) {
                     + '</div></div>';
 
                 const el = document.createElement('div');
-                el.style.cssText = 'width:750px;background:#fff;';
+                el.style.cssText = 'width:794px;background:#fff;';
                 el.innerHTML = html;
                 document.body.appendChild(el);
                 html2pdf().set({
                     margin: 0,
                     filename: 'relatorio-' + (filtro || 'todas-turmas') + '.pdf',
-                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, scrollX: 0, scrollY: 0 },
+                    html2canvas: { scale: 2, useCORS: true, allowTaint: true, scrollX: 0, scrollY: 0, width: 794, windowWidth: 794 },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 }).from(el).save().then(function() { document.body.removeChild(el); });
             });
