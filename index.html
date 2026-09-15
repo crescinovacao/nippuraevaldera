@@ -2489,6 +2489,34 @@
 
 <!-- PORTÃO DE ENTRADA: pede o nome antes de mostrar a tela inicial,
      só pra saber quem está acessando (usado no painel do consultor) -->
+<!-- Script síncrono: roda ANTES do módulo Firebase para evitar flash de conteúdo -->
+<script>
+(function() {
+    var s = window.location.search;
+    var eAdmin = s.indexOf('painel') !== -1;
+    var temTurma = s.indexOf('turma=') !== -1;
+    // sem turma = modo livre, esconde portão
+    if (!temTurma) {
+        document.addEventListener('DOMContentLoaded', function() {
+            var p = document.getElementById('portao-entrada');
+            if (p) p.style.display = 'none';
+        });
+    }
+    // modo admin = esconde tudo exceto o painel
+    if (eAdmin) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.childNodes.forEach(function(el) {
+                if (el.nodeType === 1 && el.id !== 'admin-app') {
+                    el.style.display = 'none';
+                }
+            });
+            var app = document.getElementById('admin-app');
+            if (app) app.classList.add('ativo');
+        });
+    }
+})();
+</script>
+
 <div id="portao-entrada" class="portao-entrada">
     <div class="portao-caixa">
         <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="portao-logo">
