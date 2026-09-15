@@ -230,6 +230,13 @@
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
     }
+    .modal-header.header-branco {
+        background: #FFFFFF;
+        border-bottom: 1px solid rgba(0,10,40,0.08);
+    }
+    .modal-header.header-branco .modal-header-titulo { color: #210000; }
+    .modal-header.header-branco .btn-voltar { background: var(--azul-principal); color: #fff; }
+    .modal-header.header-branco .modal-close { background: var(--azul-principal); color: #fff; }
     .modal-header-titulo {
         position: absolute;
         left: 0;
@@ -2618,7 +2625,7 @@
 
 <div class="modal-overlay" id="modal-universo">
     <div class="modal-box">
-        <div class="modal-header">
+        <div class="modal-header" id="modal-universo-header">
             <button class="btn-voltar" id="btn-voltar-pasta" style="display:none;">Voltar</button>
             <h2 class="modal-header-titulo" id="modal-universo-titulo">Artefatos</h2>
             <button class="modal-close" data-fechar="modal-universo" aria-label="Fechar">&times;</button>
@@ -4675,6 +4682,8 @@ function mostrarCategorias() {
     estadoUniverso = 'categorias';
     aplicarTemaCategoria(null);
     document.getElementById('modal-universo-titulo').textContent = 'Artefatos';
+    var headerUniverso = document.getElementById('modal-universo-header');
+    if (headerUniverso) headerUniverso.classList.remove('header-branco');
 
     const grid = document.getElementById('categoria-picker');
     grid.innerHTML = '';
@@ -4730,6 +4739,7 @@ function abrirDetalhe(m, estilo) {
     estadoUniverso = 'detalhe';
     document.getElementById('pasta-grid').style.display = 'none';
     document.getElementById('modal-universo-titulo').textContent = m.titulo;
+    document.getElementById('modal-universo-header').classList.add('header-branco');
 
     document.getElementById('material-detalhe-conteudo').innerHTML =
         '<div class="detalhe-corpo">' + conteudoDetalhe(m, estilo) + '</div>';
@@ -4761,6 +4771,7 @@ document.getElementById('btn-voltar-pasta').addEventListener('click', function()
         document.getElementById('material-detalhe').style.display = 'none';
         document.getElementById('pasta-grid').style.display = 'grid';
         document.getElementById('modal-universo-titulo').textContent = TITULOS_CATEGORIA[categoriaAtualPastas] || 'Artefatos';
+        document.getElementById('modal-universo-header').classList.remove('header-branco');
         estadoUniverso = 'pastas';
     } else if (estadoUniverso === 'pastas') {
         mostrarCategorias();
@@ -4927,12 +4938,22 @@ function loadNotes(n) {
 function v(id) { var el=document.getElementById(id); return el?el.value:''; }
 
 // Campos de texto (.fi e .fi-lg) crescem em altura conforme o conteúdo
+// e são salvos no Firebase (debounced) para aparecerem no relatório do consultor
 function ajustarAlturaCampo(el) {
   el.style.height = 'auto';
   el.style.height = el.scrollHeight + 'px';
 }
+var ORQ_CAMPOS_IDS = ['c1','c1p','c2','c2p','c3','c3p','l1','l2','l3','l4','tk-p','tk-negocio','tk-m','tk-acordos'];
+var _orqCamposTimers = {};
 document.querySelectorAll('#modal-orquestrar textarea.fi, #modal-orquestrar textarea.fi-lg').forEach(function(el){
-  el.addEventListener('input', function(){ ajustarAlturaCampo(el); });
+  el.addEventListener('input', function(){
+    ajustarAlturaCampo(el);
+    if (ORQ_CAMPOS_IDS.indexOf(el.id) === -1) return;
+    clearTimeout(_orqCamposTimers[el.id]);
+    _orqCamposTimers[el.id] = setTimeout(function(){
+      if (window._fbSalvarCampoOrquestrar) window._fbSalvarCampoOrquestrar(el.id, el.value);
+    }, 800);
+  });
 });
 
 // Open dossier
@@ -5423,6 +5444,18 @@ function pdfItemBloco(label, linhas){
         +'</div>';
 }
 
+function pdfItemComSubtitulo(label, subtitulo, linhas){
+  var corpo = linhas.map(function(l){
+    return '<p style="font-family:'+PDF_BODY_FONT+';font-size:13px;color:#210000;margin:2px 0 0 0;line-height:1.55;">'+l+'</p>';
+  }).join('');
+  return '<div style="margin-bottom:18px;">'
+        +'<span style="font-family:'+PDF_FONT+';font-size:11px;font-weight:700;'
+        +'color:'+PDF_ROXO+';display:block;margin-bottom:2px;">'+label+'</span>'
+        +'<span style="font-family:'+PDF_BODY_FONT+';font-size:12px;color:#888;display:block;margin-bottom:4px;">'+subtitulo+'</span>'
+        +corpo
+        +'</div>';
+}
+
 function pItem(label,id,idp){
   var val=v(id); if(!val) return '';
   var linhas = [val];
@@ -5474,10 +5507,10 @@ function printConsolid(){
 
 function printDecision(){
   var corpo = '<div style="margin-bottom:28px;">'
-   +pdfItemBloco('Direcionador estratégico', [pv('tk-p')])
-   +pdfItemBloco('Negócio', [pv('tk-negocio')])
-   +pdfItemBloco('Liderança', [pv('tk-m')])
-   +pdfItemBloco('Acordos', [pv('tk-acordos')])
+   +pdfItemComSubtitulo('Direcionador estratégico', 'Nossa prioridade para o primeiro ano é…', [pv('tk-p')])
+   +pdfItemComSubtitulo('Negócio', 'Escolhemos essa prioridade porque precisamos alcançar...', [pv('tk-negocio')])
+   +pdfItemComSubtitulo('Liderança', 'Que mudanças queremos começar a perceber na nossa liderança?', [pv('tk-m')])
+   +pdfItemComSubtitulo('Acordos', 'Como isso se refletirá no nosso comportamento enquanto alta liderança?', [pv('tk-acordos')])
    +'</div>';
   pdfDownload(pdfWrap('Registro de Decisão','Orquestrar — Nippura + Valdera', corpo), 'registro-de-decisao.pdf');
 }
@@ -5979,6 +6012,12 @@ function abrirModal(id, filtro) {
     if (id === 'modal-orquestrar') {
         abrirBlocoNotasRecolhido();
         if (window.iniciarRastreio) window.iniciarRastreio('orquestrar', 'Orquestrar — Missão', null);
+        if (window._fbCarregarCamposOrquestrar && typeof ORQ_CAMPOS_IDS !== 'undefined') {
+            window._fbCarregarCamposOrquestrar(ORQ_CAMPOS_IDS, function(campoId, valor){
+                var el = document.getElementById(campoId);
+                if (el && !el.value) { el.value = valor; ajustarAlturaCampo(el); }
+            });
+        }
     }
 }
 
@@ -6208,6 +6247,24 @@ window._fbDb = {
             once: function(ev) { return get(ref(db, path)); }
         };
     }
+};
+
+// salva/carrega os campos do Orquestrar (respostas de cada etapa) no Firebase,
+// pra aparecerem no relatório do painel do consultor
+window._fbSalvarCampoOrquestrar = function(campoId, valor) {
+    if (!window._fbVisitanteId || !window._fbCaminhoTurma) return;
+    var caminho = window._fbCaminhoTurma + '/acessos/' + window._fbVisitanteId + '/orquestrarRespostas/' + campoId;
+    set(ref(db, caminho), valor).catch(function() {});
+};
+window._fbCarregarCamposOrquestrar = function(idsArray, callback) {
+    if (!window._fbVisitanteId || !window._fbCaminhoTurma) return;
+    var caminho = window._fbCaminhoTurma + '/acessos/' + window._fbVisitanteId + '/orquestrarRespostas';
+    get(ref(db, caminho)).then(function(snap) {
+        var dados = snap.val() || {};
+        idsArray.forEach(function(id) {
+            if (dados[id]) callback(id, dados[id]);
+        });
+    }).catch(function() {});
 };
 
 const CAMINHO     = 'nippura-valdera';
@@ -6661,6 +6718,21 @@ if (modoAdminURL) {
                 const notasHtml = v.notas && v.notas.trim()
                     ? '<div class="adm-card-notas"><p class="adm-card-notas-titulo">✎ Anotações</p><p class="adm-card-notas-texto">' + escapeHtml(v.notas).replace(/\n/g, '<br>') + '</p></div>'
                     : '';
+                const ORQ_LABELS = {
+                    'c1':'Valor 1', 'c1p':'Valor 1 — na prática', 'c2':'Valor 2', 'c2p':'Valor 2 — na prática',
+                    'c3':'Valor 3', 'c3p':'Valor 3 — na prática',
+                    'l1':'Comportamento 1', 'l2':'Comportamento 2', 'l3':'Comportamento 3', 'l4':'Comportamento 4',
+                    'tk-p':'Direcionador estratégico', 'tk-negocio':'Negócio', 'tk-m':'Liderança', 'tk-acordos':'Acordos'
+                };
+                const orqRespostas = v.orquestrarRespostas || {};
+                const orqPreenchidos = Object.keys(ORQ_LABELS).filter(function(k) { return orqRespostas[k] && orqRespostas[k].trim(); });
+                const orqHtml = orqPreenchidos.length
+                    ? '<div class="adm-card-notas"><p class="adm-card-notas-titulo">📝 Respostas do Orquestrar</p>'
+                        + orqPreenchidos.map(function(k) {
+                            return '<p class="adm-card-notas-texto" style="margin-bottom:8px;"><strong>' + ORQ_LABELS[k] + ':</strong><br>' + escapeHtml(orqRespostas[k]) + '</p>';
+                        }).join('')
+                        + '</div>'
+                    : '';
                 return '<div class="adm-card">'
                     + '<div class="adm-card-header">'
                     + '<span class="adm-card-nome">' + escapeHtml(nome) + '</span>'
@@ -6673,7 +6745,7 @@ if (modoAdminURL) {
                     + '<div class="adm-progresso-barra-bg"><div class="adm-progresso-barra-fill" style="width:' + pct + '%;background:' + corProgresso(pct) + '"></div></div>'
                     + '<span class="adm-progresso-label">' + unicos + '/' + TOTAL_ARTEFATOS + ' (' + pct + '%)</span>'
                     + '</div>'
-                    + '<div class="adm-card-eventos">' + evHtml + notasHtml + '</div>'
+                    + '<div class="adm-card-eventos">' + evHtml + orqHtml + notasHtml + '</div>'
                     + '</div>';
             }).join('');
             lista.querySelectorAll('.adm-card-header').forEach(function(h) {
@@ -6760,12 +6832,11 @@ if (modoAdminURL) {
                     return acc + (unicos / TODOS_ARTEFATOS.length) * 100;
                 }, 0) / total);
 
-                // mais acessados
+                // mais acessados (todos os que tiveram ao menos 1 acesso, ordenados)
                 const maisAcessados = TODOS_ARTEFATOS
                     .map(function(a) { return { nome: a, n: contagemArtefatos[a] }; })
                     .filter(function(a) { return a.n > 0; })
-                    .sort(function(a, b) { return b.n - a.n; })
-                    .slice(0, 5);
+                    .sort(function(a, b) { return b.n - a.n; });
 
                 // ninguém abriu
                 const naoAbertos = TODOS_ARTEFATOS.filter(function(a) { return contagemArtefatos[a] === 0; });
@@ -6813,7 +6884,7 @@ if (modoAdminURL) {
                     + '<p style="font-size:11px;color:#888;margin:4px 0 0 0;">exploração média</p></div>'
                     + '</div>'
 
-                    + secTit('Artefatos mais acessados')
+                    + secTit('Artefatos abertos (do mais ao menos acessado)')
                     + maisAcessados.map(function(a) { return linha(a.nome, a.n + ' de ' + total + ' (' + Math.round(a.n/total*100) + '%)'); }).join('')
 
                     + (naoAbertos.length ? secTit('Ninguém abriu') + naoAbertos.map(function(a) { return linha(a, '0%'); }).join('') : '')
