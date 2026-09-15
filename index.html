@@ -2549,17 +2549,9 @@
 <script>
 (function() {
     var s = window.location.search;
-    var eAdmin = s.indexOf('painel') !== -1;
     var temTurma = s.indexOf('turma=') !== -1;
-    // sem turma = modo livre, esconde portão
+    // SEM turma na URL = painel do consultor. Esconde tudo e mostra o painel.
     if (!temTurma) {
-        document.addEventListener('DOMContentLoaded', function() {
-            var p = document.getElementById('portao-entrada');
-            if (p) p.style.display = 'none';
-        });
-    }
-    // modo admin = esconde tudo exceto o painel
-    if (eAdmin) {
         document.addEventListener('DOMContentLoaded', function() {
             document.body.childNodes.forEach(function(el) {
                 if (el.nodeType === 1 && el.id !== 'admin-app') {
@@ -6096,12 +6088,13 @@ const SENHA_ADMIN = 'cresci2026';
 
 const parametros    = new URLSearchParams(window.location.search);
 const modoAdmin     = false;
-const modoAdminURL  = parametros.has('painel');
 const turmaParam    = parametros.get('turma') || '';
+// SEM turma na URL = painel do consultor (login exigido). COM turma = participante.
+const modoAdminURL  = !turmaParam;
 const CAMINHO_TURMA = CAMINHO + '/turmas/' + (turmaParam || 'sem_turma');
 
-// sem turma na URL = modo livre, sem portão e sem rastreamento
-const modoLivre = !turmaParam;
+// modo livre não existe mais — acesso sem turma agora vai para o painel admin
+const modoLivre = false;
 
 // ---- helpers ----
 function slugify(txt) {
