@@ -6524,7 +6524,7 @@ if (modoAdminURL) {
                 const quando = formatarData(v.entrada);
                 const turmaTag = v.turma && v.turma !== 'sem_turma'
                     ? '<span class="adm-card-turma">' + escapeHtml(v.turma) + '</span>' : '';
-                const eventos = v.eventos ? Object.values(v.eventos) : [];
+                const eventos = (v.eventos ? Object.values(v.eventos) : []).filter(function(ev) { return ev.tipo === 'material'; });
                 const TOTAL_ARTEFATOS = 19;
                 const unicos = new Set(eventos.map(function(ev) { return ev.titulo; })).size;
                 const pct = Math.min(100, Math.round((unicos / TOTAL_ARTEFATOS) * 100));
@@ -6644,13 +6644,13 @@ if (modoAdminURL) {
                 const contagemArtefatos = {};
                 TODOS_ARTEFATOS.forEach(function(a) { contagemArtefatos[a] = 0; });
                 pessoas.forEach(function(p) {
-                    const vistos = new Set(Object.values(p.eventos || {}).map(function(e) { return e.titulo; }));
+                    const vistos = new Set(Object.values(p.eventos || {}).filter(function(e) { return e.tipo === 'material'; }).map(function(e) { return e.titulo; }));
                     vistos.forEach(function(t) { if (contagemArtefatos[t] !== undefined) contagemArtefatos[t]++; });
                 });
 
                 // média de exploração
                 const mediaExpl = Math.round(pessoas.reduce(function(acc, p) {
-                    const unicos = new Set(Object.values(p.eventos || {}).map(function(e) { return e.titulo; })).size;
+                    const unicos = new Set(Object.values(p.eventos || {}).filter(function(e) { return e.tipo === 'material'; }).map(function(e) { return e.titulo; })).size;
                     return acc + (unicos / TODOS_ARTEFATOS.length) * 100;
                 }, 0) / total);
 
@@ -6680,7 +6680,7 @@ if (modoAdminURL) {
                 const pessoasHtml = Object.entries(acessos).sort(function(a, b) { return (b[1].entrada||0)-(a[1].entrada||0); }).map(function(entry) {
                     var pid = entry[0]; var p = entry[1];
                     var pnome = getNome(p, pid);
-                    const unicos = new Set(Object.values(p.eventos||{}).map(function(e){return e.titulo;})).size;
+                    const unicos = new Set(Object.values(p.eventos||{}).filter(function(e){return e.tipo === 'material';}).map(function(e){return e.titulo;})).size;
                     const pct = Math.round((unicos/TODOS_ARTEFATOS.length)*100);
                     var notaHtml = (p.notas && p.notas.trim())
                         ? '<div style="background:#f8f4ff;border-radius:8px;padding:10px 12px;margin:4px 0 14px 0;font-size:12px;color:#333;line-height:1.6;white-space:pre-wrap;">' + escapeHtml(p.notas) + '</div>'
