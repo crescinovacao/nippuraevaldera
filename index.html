@@ -2326,7 +2326,19 @@
 .admin-turma-item.ativa { background: #2D0051; border-color: #2D0051; }
 .admin-turma-item.ativa .admin-turma-nome { color: #fff; }
 .admin-turma-item.ativa .admin-turma-count { color: rgba(255,255,255,0.6); }
-.admin-turma-nome { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 13px; color: #2D0051; flex: 1; }
+.admin-turma-copiar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+.admin-turma-copiar:hover { opacity: 1; }
+.admin-turma-item.ativa .admin-turma-copiar { filter: brightness(10); }
 .admin-turma-count { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #A261E1; }
 .admin-toggle-linha {
     display: flex;
@@ -5778,7 +5790,10 @@ document.addEventListener('keydown', function(e) {
     <div id="admin-dashboard">
         <div class="admin-topbar">
             <img src="https://i.imgur.com/fUPVKmL.png" alt="Crescimentum" class="admin-topbar-logo">
-            <span class="admin-topbar-titulo">Painel do Consultor — Universo Nippura &amp; Valdera</span>
+            <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+                <span class="admin-topbar-titulo">Painel do Consultor</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.5);font-family:'Inter',sans-serif;">Universo Nippura &amp; Valdera</span>
+            </div>
             <button id="admin-sair-btn" class="admin-sair-btn">Sair</button>
         </div>
 
@@ -6079,9 +6094,11 @@ if (modoAdminURL) {
             }
             lista.innerHTML = slugs.map(function(s) {
                 const count = turmas[s].acessos ? Object.keys(turmas[s].acessos).length : 0;
-                return '<div class="admin-turma-item' + (s === turmaOrqAtiva ? ' ativa' : '') + '" data-slug="' + s + '">'
+                const url = window.location.origin + window.location.pathname + '?turma=' + s;
+                return '<div class="admin-turma-item' + (s === turmaOrqAtiva ? ' ativa' : '') + '" data-slug="' + s + '" data-url="' + url + '">'
                     + '<span class="admin-turma-nome">' + escapeHtml(turmas[s].nome || s) + '</span>'
                     + '<span class="admin-turma-count">' + count + ' acesso' + (count !== 1 ? 's' : '') + '</span>'
+                    + '<button class="admin-turma-copiar" title="Copiar link" onclick="event.stopPropagation();navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'✓\';setTimeout(()=>this.textContent=\'🔗\',1500)">🔗</button>'
                     + '</div>';
             }).join('');
             lista.querySelectorAll('.admin-turma-item').forEach(function(item) {
