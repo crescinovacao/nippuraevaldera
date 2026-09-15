@@ -6027,7 +6027,13 @@ function tentarReconectarVisitante() {
     const salvo = localStorage.getItem('nv_visitante');
     if (!salvo) return false;
     try {
-        visitanteId = JSON.parse(salvo).id;
+        const dados = JSON.parse(salvo);
+        // se a turma mudou, limpa e pede nome de novo
+        if (dados.turma && dados.turma !== turmaParam) {
+            localStorage.removeItem('nv_visitante');
+            return false;
+        }
+        visitanteId = dados.id;
         window._fbVisitanteId = visitanteId;
         window._fbCaminhoTurma = CAMINHO_TURMA;
         return true;
@@ -6037,7 +6043,7 @@ function tentarReconectarVisitante() {
 function entrarComoVisitante(nome) {
     const nomeLimpo = nome.trim();
     visitanteId = slugify(nomeLimpo) + '_' + Date.now().toString(36);
-    localStorage.setItem('nv_visitante', JSON.stringify({ id: visitanteId, nome: nomeLimpo }));
+    localStorage.setItem('nv_visitante', JSON.stringify({ id: visitanteId, nome: nomeLimpo, turma: turmaParam }));
     window._fbVisitanteId = visitanteId;
     window._fbCaminhoTurma = CAMINHO_TURMA;
     set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId), {
