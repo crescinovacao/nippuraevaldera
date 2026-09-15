@@ -1837,7 +1837,7 @@
    ============================================================ */
 
 #orq-notes {
-    display: none;
+    display: flex;
     flex-direction: column;
     background: #FFFFFF;
     border: 1px solid rgba(0,10,40,0.12);
@@ -5448,26 +5448,30 @@ if (blocoNotasMic) {
 prepararReconhecimentoVoz();
 
 function carregarBlocoNotas() {
-    try {
-        blocoNotasTextarea.value =
-            localStorage.getItem(ORQ_NOTES_KEY) || '';
-    } catch (e) {
-        blocoNotasStatus.textContent = 'Salvamento indisponível';
+    if (!blocoNotasTextarea) return;
+    // tenta localStorage como fallback imediato
+    try { blocoNotasTextarea.value = localStorage.getItem(ORQ_NOTES_KEY) || ''; } catch(e) {}
+    // carrega do Firebase se disponível
+    if (window._fbDb && window._fbVisitanteId && window._fbCaminhoTurma) {
+        var fbRef = window._fbDb.ref(window._fbCaminhoTurma + '/acessos/' + window._fbVisitanteId + '/notas');
+        fbRef.once('value').then(function(snap) {
+            if (snap.val() !== null) blocoNotasTextarea.value = snap.val();
+        }).catch(function() {});
     }
 }
 
 function salvarBlocoNotas() {
     if (!blocoNotasTextarea) return;
-
-    try {
-        localStorage.setItem(
-            ORQ_NOTES_KEY,
-            blocoNotasTextarea.value
-        );
-
-        blocoNotasStatus.textContent = 'Salvo automaticamente';
-    } catch (e) {
-        blocoNotasStatus.textContent = 'Não foi possível salvar';
+    const texto = blocoNotasTextarea.value;
+    // sempre salva no localStorage como backup
+    try { localStorage.setItem(ORQ_NOTES_KEY, texto); } catch(e) {}
+    // salva no Firebase
+    if (window._fbDb && window._fbVisitanteId && window._fbCaminhoTurma) {
+        window._fbDb.ref(window._fbCaminhoTurma + '/acessos/' + window._fbVisitanteId + '/notas').set(texto)
+            .then(function() { if (blocoNotasStatus) blocoNotasStatus.textContent = 'Salvo ✓'; })
+            .catch(function() { if (blocoNotasStatus) blocoNotasStatus.textContent = 'Salvo localmente'; });
+    } else {
+        if (blocoNotasStatus) blocoNotasStatus.textContent = 'Salvo automaticamente';
     }
 }
 
@@ -5622,6 +5626,14 @@ blocoNotasToggle.setAttribute(
 );
 }
 
+// bloco de notas sempre visível — aparece recolhido desde o início
+if (blocoNotas) {
+    blocoNotas.style.display = 'flex';
+    blocoNotas.classList.add('recolhido');
+    carregarBlocoNotas();
+    if (blocoNotasToggleIcon) blocoNotasToggleIcon.classList.add('girado');
+}
+
 if (blocoNotasTextarea) {
     blocoNotasTextarea.addEventListener('input', function() {
         blocoNotasStatus.textContent = 'Salvando...';
@@ -5673,6 +5685,7 @@ function abrirModal(id, filtro) {
         } else {
             mostrarCategorias();
         }
+        abrirBlocoNotasRecolhido(); // mesmo bloco de notas do Orquestrar
     }
 
     if (id === 'modal-orquestrar') {
@@ -5687,9 +5700,13 @@ function fecharModal(id) {
 
     if (window.finalizarRastreio) window.finalizarRastreio();
 
-    if (id === 'modal-orquestrar') {
+    if (id === 'modal-orquestrar' || id === 'modal-universo') {
         pararGravacaoNotas();
         salvarBlocoNotas();
+        // mantém o bloco visível mas recolhido
+        if (blocoNotas) { blocoNotas.classList.add('recolhido'); }
+        const modalOrq = document.getElementById('modal-orquestrar');
+        if (modalOrq) modalOrq.classList.remove('notas-abertas');
     }
 
     pararMidias(overlay);
@@ -5888,6 +5905,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
+// expõe globalmente para o bloco de notas (módulo separado)
+window._fbDb = { ref: function(path) { return ref(db, path); } };
+window._fbDb.ref = function(path) { return ref(db, path); };
+// wrapper simples compatível com a API usada em salvarBlocoNotas
+window._fbDb = {
+    ref: function(path) {
+        return {
+            set: function(val) { return set(ref(db, path), val); },
+            once: function(ev) { return get(ref(db, path)); }
+        };
+    }
+};
+
 const CAMINHO     = 'nippura-valdera';
 const SENHA_ADMIN = 'cresci2026';
 
@@ -5923,13 +5953,20 @@ const portao = document.getElementById('portao-entrada');
 function tentarReconectarVisitante() {
     const salvo = localStorage.getItem('nv_visitante');
     if (!salvo) return false;
-    try { visitanteId = JSON.parse(salvo).id; return true; } catch(e) { return false; }
+    try {
+        visitanteId = JSON.parse(salvo).id;
+        window._fbVisitanteId = visitanteId;
+        window._fbCaminhoTurma = CAMINHO_TURMA;
+        return true;
+    } catch(e) { return false; }
 }
 
 function entrarComoVisitante(nome) {
     const nomeLimpo = nome.trim();
     visitanteId = slugify(nomeLimpo) + '_' + Date.now().toString(36);
     localStorage.setItem('nv_visitante', JSON.stringify({ id: visitanteId, nome: nomeLimpo }));
+    window._fbVisitanteId = visitanteId;
+    window._fbCaminhoTurma = CAMINHO_TURMA;
     set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId), {
         nome: nomeLimpo,
         turma: turmaParam,
