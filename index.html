@@ -2452,7 +2452,20 @@
 .adm-card-nome { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 13px; color: #2D0051; flex: 1; }
 .adm-card-turma { font-size: 10px; font-family: 'JetBrains Mono', monospace; background: #EDE0FA; color: #2D0051; border-radius: 4px; padding: 2px 7px; }
 .adm-card-quando { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #A261E1; white-space: nowrap; }
-.adm-card-seta { color: #ccc; font-size: 12px; transition: transform 0.2s; }
+.adm-card-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #c0392b;
+    opacity: 0.5;
+    padding: 3px 5px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+.adm-card-del:hover { opacity: 1; background: rgba(192,57,43,0.08); }
 .adm-card.aberto .adm-card-seta { transform: rotate(90deg); }
 .adm-card-eventos { display: none; padding: 0 16px 14px 16px; border-top: 1px solid #f0eaf8; }
 .adm-card.aberto .adm-card-eventos { display: block; }
@@ -6413,6 +6426,7 @@ if (modoAdminURL) {
                     + '<span class="adm-card-nome">' + escapeHtml(nome) + '</span>'
                     + turmaTag
                     + '<span class="adm-card-quando">' + quando + '</span>'
+                    + '<button class="adm-card-del" data-id="' + id + '" data-turma="' + (v.turma || '') + '" title="Excluir acesso"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
                     + '<span class="adm-card-seta">▶</span>'
                     + '</div>'
                     + '<div class="adm-card-progresso">'
@@ -6423,7 +6437,22 @@ if (modoAdminURL) {
                     + '</div>';
             }).join('');
             lista.querySelectorAll('.adm-card-header').forEach(function(h) {
-                h.addEventListener('click', function() { h.parentElement.classList.toggle('aberto'); });
+                h.addEventListener('click', function(e) {
+                    if (e.target.closest('.adm-card-del')) return;
+                    h.parentElement.classList.toggle('aberto');
+                });
+            });
+            lista.querySelectorAll('.adm-card-del').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var id = btn.dataset.id;
+                    var turma = btn.dataset.turma || filtroTurma;
+                    if (!turma) { alert('Não foi possível identificar a turma deste acesso.'); return; }
+                    var ok = window.confirm('Excluir este acesso?\nEssa ação não pode ser desfeita.');
+                    if (!ok) return;
+                    set(ref(db, CAMINHO + '/turmas/' + turma + '/acessos/' + id), null)
+                        .catch(function(err) { alert('Erro: ' + err.message); });
+                });
             });
         }
 
