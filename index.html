@@ -6066,9 +6066,13 @@ function entrarComoVisitante(nome) {
     window._fbVisitanteId = visitanteId;
     window._fbCaminhoTurma = CAMINHO_TURMA;
     set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId), {
-        nome: nomeLimpo,
-        turma: turmaParam,
+        nome: String(nomeLimpo),
+        turma: String(turmaParam),
         entrada: Date.now()
+    }).catch(function() {
+        // fallback: salva campos separadamente
+        set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId + '/nome'), nomeLimpo);
+        set(ref(db, CAMINHO_TURMA + '/acessos/' + visitanteId + '/entrada'), Date.now());
     });
 }
 
@@ -6254,7 +6258,9 @@ if (modoAdminURL) {
         // --- lista de turmas (col esq) ---
         let turmaOrqAtiva = null;
 
-        function renderTurmas(turmas) {
+        function getNome(v, id) {
+            return (v && v.nome) || (id ? id.replace(/_[a-z0-9]+$/i, '') : '?');
+        }
             const lista = document.getElementById('admin-turma-lista');
             const selRelatorio = document.getElementById('admin-sel-turma-relatorio');
             if (!lista) return;
@@ -6406,7 +6412,7 @@ if (modoAdminURL) {
             }
             lista.innerHTML = ids.map(function(id) {
                 const v = acessos[id];
-                const nome = v.nome || id;
+                const nome = getNome(v, id);
                 const quando = formatarData(v.entrada);
                 const turmaTag = v.turma && v.turma !== 'sem_turma'
                     ? '<span class="adm-card-turma">' + escapeHtml(v.turma) + '</span>' : '';
@@ -6533,10 +6539,12 @@ if (modoAdminURL) {
                         + '</div>';
                 };
 
-                const pessoasHtml = Object.values(acessos).sort(function(a, b) { return (b.entrada||0)-(a.entrada||0); }).map(function(p) {
+                const pessoasHtml = Object.entries(acessos).sort(function(a, b) { return (b[1].entrada||0)-(a[1].entrada||0); }).map(function(entry) {
+                    var pid = entry[0]; var p = entry[1];
+                    var pnome = getNome(p, pid);
                     const unicos = new Set(Object.values(p.eventos||{}).map(function(e){return e.titulo;})).size;
                     const pct = Math.round((unicos/TODOS_ARTEFATOS.length)*100);
-                    return linha(escapeHtml(p.nome||''), unicos + '/' + TODOS_ARTEFATOS.length + ' artefatos (' + pct + '%)');
+                    return linha(escapeHtml(pnome), unicos + '/' + TODOS_ARTEFATOS.length + ' artefatos (' + pct + '%)');
                 }).join('');
 
                 const html = '<div style="font-family:sans-serif;background:#fff;width:750px;">'
