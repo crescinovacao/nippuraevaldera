@@ -6038,9 +6038,10 @@ window._fbDb = {
 const CAMINHO     = 'nippura-valdera';
 const SENHA_ADMIN = 'cresci2026';
 
-const parametros  = new URLSearchParams(window.location.search);
-const modoAdmin   = false; // admin agora tem painel próprio (?painel)
-const turmaParam  = parametros.get('turma') || '';
+const parametros    = new URLSearchParams(window.location.search);
+const modoAdmin     = false;
+const modoAdminURL  = parametros.has('painel');
+const turmaParam    = parametros.get('turma') || '';
 const CAMINHO_TURMA = CAMINHO + '/turmas/' + (turmaParam || 'sem_turma');
 
 // sem turma na URL = modo livre, sem portão e sem rastreamento
@@ -6064,15 +6065,6 @@ function formatarDuracao(s) {
 function formatarData(ts) {
     if (!ts) return '';
     return new Date(ts).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-}
-
-// ---- se for admin, esconde tudo e mostra o painel imediatamente ----
-if (modoAdminURL) {
-    document.querySelectorAll('body > *:not(#admin-app)').forEach(function(el) {
-        el.style.display = 'none';
-    });
-    const adminApp = document.getElementById('admin-app');
-    if (adminApp) adminApp.classList.add('ativo');
 }
 
 // ---- portão de entrada ----
@@ -6174,8 +6166,6 @@ if (modoLivre) {
 }
 
 // ---- painel admin (tela cheia com login) ----
-const modoAdminURL = parametros.has('painel');
-
 if (modoAdminURL) {
     // esconde o conteúdo principal e mostra o painel
     document.querySelectorAll('body > *:not(#admin-app)').forEach(function(el) {
