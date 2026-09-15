@@ -214,6 +214,8 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
     }
     .modal-header {
         position: sticky;
@@ -225,6 +227,8 @@
         border-radius: 8px 8px 0 0;
         padding: 10px 18px;
         flex-shrink: 0;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
     }
     .modal-header-titulo {
         position: absolute;
@@ -1844,6 +1848,8 @@
     background: #FFFFFF;
     box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
     overflow: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 
     position: fixed;
     top: auto;
@@ -1893,6 +1899,7 @@
     justify-content: space-between;
     cursor: pointer;
     flex-shrink: 0;
+    border-radius: 8px 8px 0 0;
 }
 
 .orq-notes-header-esq {
@@ -2813,19 +2820,24 @@
     <div class="decision-card">
       <div class="decision-body" style="padding-top:26px;">
         <div>
-          <p class="tk-fl">Nossa prioridade para o primeiro ano é</p>
+          <p class="tk-fl">Direcionador estratégico</p>
+          <p class="tk-fl" style="opacity:.65;font-weight:400;margin-top:-6px;margin-bottom:8px;">Nossa prioridade para o primeiro ano é…</p>
           <textarea class="fi-lg" placeholder="Uma frase. Comece com um verbo de transformação..." id="tk-p" rows="1"></textarea>
         </div>
         <div>
-          <p class="tk-fl">Escolhemos essa prioridade porque vimos</p>
-          <div class="ev-rows">
-            <div class="ev-r"><span class="ev-bul">1.</span><textarea class="fi-lg" placeholder="Evidência do dossiê..." id="tk-e1" rows="1"></textarea></div>
-            <div class="ev-r"><span class="ev-bul">2.</span><textarea class="fi-lg" placeholder="Evidência do dossiê..." id="tk-e2" rows="1"></textarea></div>
-          </div>
+          <p class="tk-fl">Negócio</p>
+          <p class="tk-fl" style="opacity:.65;font-weight:400;margin-top:-6px;margin-bottom:8px;">Escolhemos essa prioridade porque precisamos alcançar...</p>
+          <textarea class="fi-lg" placeholder="O resultado de negócio que essa prioridade sustenta..." id="tk-negocio" rows="1"></textarea>
         </div>
         <div>
-          <p class="tk-fl">Que mudança queremos começar a perceber?</p>
-          <textarea class="fi-lg" placeholder="O que será diferente quando essa prioridade avançar?" id="tk-m" rows="1"></textarea>
+          <p class="tk-fl">Liderança</p>
+          <p class="tk-fl" style="opacity:.65;font-weight:400;margin-top:-6px;margin-bottom:8px;">Que mudanças queremos começar a perceber na nossa liderança?</p>
+          <textarea class="fi-lg" placeholder="O que será diferente na liderança quando essa prioridade avançar?" id="tk-m" rows="1"></textarea>
+        </div>
+        <div>
+          <p class="tk-fl">Acordos</p>
+          <p class="tk-fl" style="opacity:.65;font-weight:400;margin-top:-6px;margin-bottom:8px;">Como isso se refletirá no nosso comportamento enquanto alta liderança?</p>
+          <textarea class="fi-lg" placeholder="Os comportamentos que assumimos como compromisso..." id="tk-acordos" rows="1"></textarea>
         </div>
       </div>
     </div>
@@ -5349,12 +5361,11 @@ function printConsolid(){
 }
 
 function printDecision(){
-  var N = '<span style="font-family:'+PDF_FONT+';font-weight:800;color:'+PDF_ROXO+';">';
-  var NE = '</span> ';
   var corpo = '<div style="margin-bottom:28px;">'
-   +pdfItemBloco('Nossa prioridade para o primeiro ano', [pv('tk-p')])
-   +pdfItemBloco('Escolhemos porque vimos', [N+'1.'+NE+pv('tk-e1'), N+'2.'+NE+pv('tk-e2')])
-   +pdfItemBloco('Mudança que queremos começar a perceber', [pv('tk-m')])
+   +pdfItemBloco('Direcionador estratégico', [pv('tk-p')])
+   +pdfItemBloco('Negócio', [pv('tk-negocio')])
+   +pdfItemBloco('Liderança', [pv('tk-m')])
+   +pdfItemBloco('Acordos', [pv('tk-acordos')])
    +'</div>';
   pdfDownload(pdfWrap('Registro de Decisão','Orquestrar — Nippura + Valdera', corpo), 'registro-de-decisao.pdf');
 }
