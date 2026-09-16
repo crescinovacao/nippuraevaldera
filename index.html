@@ -4388,7 +4388,7 @@ function paragrafosClassificados(texto, estilo) {
             continue;
         }
 
-        if ((estilo === 'noticia' || estilo === 'dados' || estilo === 'documento' || estilo === 'transcricao') && p.length < 75 && !/[.,!?:]$/.test(p) && i !== 0) {
+        if ((estilo === 'noticia' || estilo === 'dados' || estilo === 'documento' || estilo === 'transcricao') && p.length < 75 && !/[.,!?:]$/.test(p) && (i !== 0 || estilo === 'transcricao')) {
             html += '<h4 class="subtitulo-secao">' + p + '</h4>';
             continue;
         }
