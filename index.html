@@ -718,6 +718,12 @@
         font-family: 'Raleway', sans-serif; font-weight: 800; color: #210000;
         font-size: 14px; margin: 14px 0 2px 0;
     }
+    .encaminhamento-item {
+        font-size: 13.5px;
+        line-height: 1.6;
+        margin: 0 0 8px 0 !important;
+        padding-left: 4px;
+    }
     .dados-secao-maior {
         font-family: 'Raleway', sans-serif; font-weight: 800 !important;
         color: var(--azul-principal) !important; opacity: 1 !important;
@@ -932,6 +938,12 @@
         color: #210000;
         font-size: 14px;
         margin-bottom: 6px;
+    }
+    /* Quando o selo é uma imagem real (não o badge de iniciais), ele deve
+       ficar grande — essa regra tem mais especificidade que a de cima e vence */
+    .tema-documento .papel-cabecalho .chrome-documento-selo.chrome-documento-selo-img {
+        width: 170px; height: 170px;
+        border: none;
     }
     /* Tamanho padrão do selo, usado tanto nos documentos oficiais quanto no dashboard de dados */
     .chrome-documento-selo-img {
@@ -4366,12 +4378,17 @@ function paragrafosClassificados(texto, estilo) {
             continue;
         }
 
+        if (estilo === 'transcricao' && /^\d+\.\s/.test(p)) {
+            html += '<p class="encaminhamento-item">' + p + '</p>';
+            continue;
+        }
+
         if (/\|/.test(p) && p.length < 110 && !/^["“]/.test(p)) {
             html += '<p class="meta-linha">' + p + '</p>';
             continue;
         }
 
-        if ((estilo === 'noticia' || estilo === 'dados' || estilo === 'documento') && p.length < 75 && !/[.,!?:]$/.test(p) && i !== 0) {
+        if ((estilo === 'noticia' || estilo === 'dados' || estilo === 'documento' || estilo === 'transcricao') && p.length < 75 && !/[.,!?:]$/.test(p) && i !== 0) {
             html += '<h4 class="subtitulo-secao">' + p + '</h4>';
             continue;
         }
