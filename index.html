@@ -1535,10 +1535,10 @@
 
 /* INPUTS */
 #modal-orquestrar .fl { display:block; font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-sec); margin-bottom:5px; }
-#modal-orquestrar .fi { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 13px; font-family:var(--b); font-size:14px; color:var(--text); transition:border-color .2s,background .2s; resize:none; overflow:hidden; min-height:40px; line-height:1.5; }
+#modal-orquestrar .fi { width:100%; box-sizing:border-box; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px 13px; font-family:var(--b); font-size:14px; color:var(--text); transition:border-color .2s,background .2s; resize:none; overflow:hidden; min-height:40px; line-height:1.5; }
 #modal-orquestrar .fi:focus { outline:none; border-color:var(--blue); background:#FAFCFF; }
 #modal-orquestrar .fi::placeholder { color:#9A96A3; }
-#modal-orquestrar .fi-lg { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:13px 15px; font-family:var(--b); font-size:15px; color:var(--text); transition:border-color .2s,background .2s; resize:none; overflow:hidden; min-height:47px; line-height:1.5; }
+#modal-orquestrar .fi-lg { width:100%; box-sizing:border-box; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:13px 15px; font-family:var(--b); font-size:15px; color:var(--text); transition:border-color .2s,background .2s; resize:none; overflow:hidden; min-height:47px; line-height:1.5; }
 #modal-orquestrar .fi-lg:focus { outline:none; border-color:var(--navy); background:var(--card); }
 #modal-orquestrar .fi-lg::placeholder { color:#9A96A3; }
 
@@ -4812,6 +4812,15 @@ function goTo(id) {
   currentState = id;
   updateProg(id);
 
+  // Recalcula a altura dos campos de texto agora que a etapa ficou
+  // visível — enquanto escondida, o navegador não sabe calcular
+  // scrollHeight direito, e um valor restaurado (ex: vindo do
+  // Firebase ao reabrir o Orquestrar) pode ficar com altura errada
+  // até a pessoa realmente chegar nessa etapa.
+  el.querySelectorAll('textarea.fi, textarea.fi-lg').forEach(function(campo) {
+    ajustarAlturaCampo(campo);
+  });
+
   if (window.iniciarRastreio) {
     var rotulos = { e1:'Orquestrar — Missão', e2:'Orquestrar — Escolha do dossiê', e3:'Orquestrar — Investigação', e5:'Orquestrar — Síntese', e6:'Orquestrar — Registro de decisão', e7:'Orquestrar — Transição' };
     window.iniciarRastreio('orquestrar', rotulos[id] || ('Orquestrar — ' + id), null);
@@ -4883,7 +4892,7 @@ function v(id) { var el=document.getElementById(id); return el?el.value:''; }
 // e são salvos no Firebase (debounced) para aparecerem no relatório do consultor
 function ajustarAlturaCampo(el) {
   el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
+  el.style.height = (el.scrollHeight + 2) + 'px';
 }
 var ORQ_CAMPOS_IDS = ['c1','c1p','c2','c2p','c3','c3p','l1','l2','l3','l4','tk-p','tk-negocio','tk-m','tk-acordos'];
 var _orqCamposTimers = {};
