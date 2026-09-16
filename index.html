@@ -933,6 +933,16 @@
         border: none;
         object-fit: contain;
     }
+    .chrome-documento-selos-duplos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        margin-bottom: 6px;
+    }
+    .chrome-documento-selo-grande {
+        width: 150px; height: 150px;
+    }
     .tema-documento .papel-cabecalho .chrome-documento-orgao {
         color: #210000;
         opacity: 0.75;
@@ -4527,10 +4537,18 @@ const SELOS_DOCUMENTO = {
 
 function detalheDocumento(m) {
     const iniciais = m.categoria === 'nippura' ? 'NP' : (m.categoria === 'valdera' ? 'VL' : 'NV');
-    const seloUrl = SELOS_DOCUMENTO[m.categoria];
-    const selo = seloUrl
-        ? '<img class="chrome-documento-selo chrome-documento-selo-img" src="' + seloUrl + '" alt="Selo oficial">'
-        : '<div class="chrome-documento-selo">' + iniciais + '</div>';
+    let selo;
+    if (m.categoria === 'neutro') {
+        selo = '<div class="chrome-documento-selos-duplos">' +
+            '<img class="chrome-documento-selo-img chrome-documento-selo-grande" src="' + SELOS_DOCUMENTO.nippura + '" alt="Selo de Nippura">' +
+            '<img class="chrome-documento-selo-img chrome-documento-selo-grande" src="' + SELOS_DOCUMENTO.valdera + '" alt="Selo de Valdera">' +
+        '</div>';
+    } else {
+        const seloUrl = SELOS_DOCUMENTO[m.categoria];
+        selo = seloUrl
+            ? '<img class="chrome-documento-selo chrome-documento-selo-img" src="' + seloUrl + '" alt="Selo oficial">'
+            : '<div class="chrome-documento-selo">' + iniciais + '</div>';
+    }
     const assinaturasHtml = m.assinaturas ? renderAssinaturas(m.assinaturas) : '';
     return '<div class="tema-documento"><div class="papel">' +
         '<div class="papel-cabecalho">' +
