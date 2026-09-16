@@ -1508,7 +1508,7 @@
 #modal-orquestrar #dossieEvidenciasView { border-radius:14px; padding:8px 4px; }
 
 #modal-orquestrar .passo-nav {
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex; align-items:center; justify-content:center;
     padding:16px 24px; border-bottom:1px solid var(--border);
 }
 #modal-orquestrar .passo-tabs { display:flex; gap:8px; }
@@ -1568,7 +1568,7 @@
 
 /* ── E2 SELEÇÃO ── */
 #modal-orquestrar .dossie-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
-#modal-orquestrar .dossie-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:24px; display:flex; flex-direction:column; gap:12px; cursor:default; transition:border-color .2s,box-shadow .2s; }
+#modal-orquestrar .dossie-card { background:#F7F6FA; border:1px solid var(--border); border-radius:8px; padding:24px; display:flex; flex-direction:column; gap:12px; cursor:default; transition:border-color .2s,box-shadow .2s; }
 #modal-orquestrar .dossie-card { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 
 /* Aparência de bloqueado (visual apenas — o card continua clicável) */
@@ -1615,7 +1615,7 @@
 }
 #modal-orquestrar .tema-aba:hover { border-color:var(--blue); }
 #modal-orquestrar .tema-aba.ativa { background:var(--blue-lt); border-color:var(--blue); color:var(--blue); }
-#modal-orquestrar .tema-aba.ativa span { color:var(--blue); opacity:1; }
+#modal-orquestrar .tema-aba.ativa span { color:var(--navy); opacity:1; }
 #modal-orquestrar .btn-secundario-orq {
     background:none; border:1px solid var(--border); color:var(--text);
     border-radius:10px; padding:12px 18px; font-family:var(--b); font-weight:700;
@@ -1774,10 +1774,12 @@
 #modal-orquestrar .sp-name { font-size:12px; font-weight:700; color:var(--text); }
 #modal-orquestrar .sp-role { font-size:10px; color:var(--text-sec); }
 #modal-orquestrar .sp-q { font-size:13px; color:var(--text); line-height:1.65; padding-left:39px; font-style:italic; }
-#modal-orquestrar .vote-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
-#modal-orquestrar .vote-table th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--text-sec); padding:8px 10px; border-bottom:2px solid var(--border); }
-#modal-orquestrar .vote-table td { padding:8px 10px; border-bottom:1px solid var(--border-lt); color:var(--text); vertical-align:top; }
+#modal-orquestrar .vote-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+#modal-orquestrar .vote-table th { text-align:left; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:var(--navy); padding:11px 14px; background:var(--blue-lt); border-bottom:1px solid var(--border); }
+#modal-orquestrar .vote-table td { padding:11px 14px; border-bottom:1px solid var(--border-lt); border-right:1px solid var(--border-lt); color:var(--text); vertical-align:top; }
+#modal-orquestrar .vote-table td:last-child { border-right:none; }
 #modal-orquestrar .vote-table tr:last-child td { border-bottom:none; }
+#modal-orquestrar .vote-table tbody tr:nth-child(even) td { background:var(--bg); }
 #modal-orquestrar .vote-n { font-weight:700; color:var(--blue); }
 #modal-orquestrar .refl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; }
 #modal-orquestrar .refl-cell { padding:12px; background:var(--bg); border-radius:8px; }
@@ -4906,7 +4908,6 @@ function renderPassoTema(numeroTema) {
   container.innerHTML =
     '<div class="passo-nav">' +
       '<div class="passo-tabs">' + stepsHtml + '</div>' +
-      '<div class="passo-contador">' + (idx + 1) + ' de ' + itens.length + '</div>' +
     '</div>' +
     '<div class="passo-conteudo">' +
       '<div class="ev-meta" style="margin-bottom:16px;">' +
@@ -5044,10 +5045,10 @@ function getDossie3(){
    +'<tr><td>O time de liderança buscará tornar os processos de decisão mais legíveis para todas as partes envolvidas.</td><td><em style="color:var(--text-sec);">A definir</em></td></tr>'
    +'</tbody></table>';
 
-  var b='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">'
+  var b='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">'
    +'<div class="nxt-section"><p class="nxt-label def">Definido</p><ul class="nxt-list def"><li>Encontro de acompanhamento em 30 dias. <em style="color:var(--text-sec);">Sem responsável ou pauta definida até o encerramento.</em></li></ul></div>'
-   +'<div class="nxt-section"><p class="nxt-label wip">Em construção</p><ul class="nxt-list wip"><li>Revisão do protocolo de comunicação entre coordenações de projeto. Formato a acordar.</li><li>Mapeamento das decisões por nível de autoridade nos projetos integrados. Quem inicia: não definido.</li></ul></div></div>'
-   +'<div class="nxt-section"><p class="nxt-label open">Em aberto</p><ul class="nxt-list open"><li>Estrutura de suporte intercultural permanente. Conceito aprovado. Formato, responsável e prazo: não definidos.</li><li>Mecanismo para que percepções das equipes de campo cheguem à agenda bilateral. Sem formato.</li></ul></div>';
+   +'<div class="nxt-section"><p class="nxt-label wip">Em construção</p><ul class="nxt-list wip"><li>Revisão do protocolo de comunicação entre coordenações de projeto. Formato a acordar.</li><li>Mapeamento das decisões por nível de autoridade nos projetos integrados. Quem inicia: não definido.</li></ul></div>'
+   +'<div class="nxt-section"><p class="nxt-label open">Em aberto</p><ul class="nxt-list open"><li>Estrutura de suporte intercultural permanente. Conceito aprovado. Formato, responsável e prazo: não definidos.</li><li>Mecanismo para que percepções das equipes de campo cheguem à agenda bilateral. Sem formato.</li></ul></div></div>';
 
   var c='<p style="font-size:13px;color:var(--text-sec);margin-bottom:14px;">Questões que emergiram ao longo do offsite e não foram concluídas:</p>'
    +'<div class="oq"><span class="oq-n">1.</span><p class="oq-t">Quem cria e sustenta a estrutura de suporte intercultural? <em style="color:var(--text-sec);">Sem resposta.</em></p></div>'
