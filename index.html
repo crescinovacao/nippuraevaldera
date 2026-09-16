@@ -3929,13 +3929,9 @@ Ambas integram a área de Coordenadoria de Projetos de Valdera`
     {
         titulo: "Pesquisa de Bem-Estar",
         categoria: "valdera",
-        formato: "Dados",
+        formato: "Matéria",
         resumo: "Pesquisa social de Valdera com indicadores de colaboração e confiança institucional.",
-        texto: `VALDERA NEWS
-
-Trabalho e Sociedade   |   Edicao Atual
-
-Pesquisa aponta queda em confianca e colaboracao pelo segundo ano consecutivo em Valdera
+        texto: `Pesquisa aponta queda em confianca e colaboracao pelo segundo ano consecutivo em Valdera
 
 Segunda edicao da Pesquisa Nacional de Bem-Estar Social mostra piora em todos os seis indicadores. Confianca nas liderancas e comunicacao figuram entre os mais criticos.
 
@@ -4160,7 +4156,7 @@ Encaminhamentos registrados
 Transcrição elaborada pela coordenação de registros institucionais. Documento de circulação restrita.`
     },
     {
-        titulo: "Troca de mensagens de voz: Pedro e Dino",
+        titulo: "Conversa informal: Pedro e Dino",
         categoria: "valdera",
         formato: "Roteiro de vídeo",
         midia: "https://player.vimeo.com/video/1224050737",
@@ -4272,9 +4268,9 @@ function paragrafosClassificados(texto, estilo) {
         const p = blocos[i];
         const prox = blocos[i + 1];
 
-        if (estilo === 'dados' && /^[■□]{4,}/.test(p)) { continue; }
+        if ((estilo === 'dados' || estilo === 'noticia') && /^[■□]{4,}/.test(p)) { continue; }
 
-        if (estilo === 'dados' && prox && /^[■□]{4,}/.test(prox)) {
+        if ((estilo === 'dados' || estilo === 'noticia') && prox && /^[■□]{4,}/.test(prox)) {
             html += renderBarraDados(p, prox);
             i++;
             continue;
@@ -4686,11 +4682,15 @@ function mostrarCategorias() {
     const grid = document.getElementById('categoria-picker');
     grid.innerHTML = '';
     Object.keys(TITULOS_CATEGORIA).forEach(function(categoria) {
+        const paleta = PALETAS_CATEGORIA[categoria];
+        const corIcone = paleta ? paleta.principal : '';
+        const corTitulo = paleta ? paleta.escuro : '';
+        const bgIcone = paleta ? paleta.claro : '';
         const item = document.createElement('button');
         item.className = 'pasta-item';
         item.innerHTML =
-            '<div class="pasta-icone">' + ICONES_CATEGORIA[categoria] + '</div>' +
-            '<span class="pasta-titulo">' + TITULOS_CATEGORIA[categoria] + '</span>' +
+            '<div class="pasta-icone"' + (corIcone ? ' style="color:' + corIcone + ';background:' + bgIcone + ';"' : '') + '>' + ICONES_CATEGORIA[categoria] + '</div>' +
+            '<span class="pasta-titulo"' + (corTitulo ? ' style="color:' + corTitulo + ';"' : '') + '>' + TITULOS_CATEGORIA[categoria] + '</span>' +
             '<span class="pasta-resumo">' + RESUMOS_CATEGORIA[categoria] + '</span>';
         item.addEventListener('click', function() { renderPastas(categoria); });
         grid.appendChild(item);
@@ -6788,7 +6788,7 @@ if (modoAdminURL) {
             'Diário de Bordo: Daven Rol','Mensagens Privadas: Lucas e Sorin','Pronunciamento: Rael Voss',
             'Regulamento Interno de Nippura','Dados Comparativos de Valdera','Mensagem de Áudio: Ana Breva',
             'Pesquisa de Bem-Estar','Portal Valdera News','Reflexão: Renata Solva','Relato: Julia Moran',
-            'Síntese Cultural de Valdera','Transcrição: Alinhamento Carla e Vera','Troca de mensagens de voz: Pedro e Dino'
+            'Síntese Cultural de Valdera','Transcrição: Alinhamento Carla e Vera','Conversa informal: Pedro e Dino'
         ];
 
         const btnPdfRel = document.getElementById('admin-btn-pdf-relatorio');
