@@ -1578,6 +1578,23 @@
     font-family:'Raleway',sans-serif; font-weight:800; font-size:14px;
     color:var(--blue); margin-bottom:10px;
 }
+#modal-orquestrar .tema-abas {
+    display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;
+}
+#modal-orquestrar .tema-aba {
+    flex:1; min-width:160px;
+    display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:12px 16px; cursor:pointer; text-align:left;
+    font-family:'Raleway',sans-serif; font-weight:800; font-size:13px; color:var(--text-sec);
+    transition:border-color .2s ease, background .2s ease, color .2s ease;
+}
+#modal-orquestrar .tema-aba span {
+    font-family:var(--b); font-weight:400; font-size:11.5px; color:var(--text-sec); opacity:.85;
+}
+#modal-orquestrar .tema-aba:hover { border-color:var(--blue); }
+#modal-orquestrar .tema-aba.ativa { background:var(--blue-lt); border-color:var(--blue); color:var(--blue); }
+#modal-orquestrar .tema-aba.ativa span { color:var(--blue); opacity:1; }
 #modal-orquestrar .btn-secundario-orq {
     background:none; border:1px solid var(--border); color:var(--text);
     border-radius:10px; padding:12px 18px; font-family:var(--b); font-weight:700;
@@ -2808,16 +2825,17 @@
   </div>
   <p class="dossie-instruct">Leia cada evidência e observe padrões. Registre suas percepções no bloco de notas enquanto investiga.</p>
 
+  <div class="tema-abas">
+    <button class="tema-aba" id="tema-aba-1" onclick="mostrarTemaEvidencia(1)">Tema 1<span>Para Onde Queremos Ir</span></button>
+    <button class="tema-aba" id="tema-aba-2" onclick="mostrarTemaEvidencia(2)">Tema 2<span>O Que Está Nos Travando</span></button>
+    <button class="tema-aba" id="tema-aba-3" onclick="mostrarTemaEvidencia(3)">Tema 3<span>Acordos e Próximos Passos</span></button>
+  </div>
+
   <div class="dossie-layout" style="grid-template-columns:1fr;">
     <div class="card" id="dossieEvidenciasView">
-      <div class="acc-item" style="border:none;">
-        <div class="dossie-ev-titulo">Tema 1 — Para Onde Queremos Ir</div>
-      </div>
-      <div id="dossieEv1"></div>
-      <div class="dossie-ev-titulo" style="margin-top:22px;">Tema 2 — O Que Está Nos Travando</div>
-      <div id="dossieEv2"></div>
-      <div class="dossie-ev-titulo" style="margin-top:22px;">Tema 3 — Acordos e Próximos Passos</div>
-      <div id="dossieEv3"></div>
+      <div id="dossieEv1" style="display:none;"></div>
+      <div id="dossieEv2" style="display:none;"></div>
+      <div id="dossieEv3" style="display:none;"></div>
     </div>
   </div>
 
@@ -4857,11 +4875,23 @@ function garantirEvidenciasPreenchidas() {
   evidenciasPreenchidas = true;
 }
 
-// Entra na etapa de investigação e garante que as evidências
-// estejam preenchidas (usado pelos cartões de tema e pelo botão)
+// Mostra só o tema escolhido por vez (em vez dos 3 empilhados),
+// pra não ter 12 itens de acordeão abertos de uma vez na tela
+function mostrarTemaEvidencia(numeroTema) {
+  garantirEvidenciasPreenchidas();
+  [1, 2, 3].forEach(function(n) {
+    const painel = document.getElementById('dossieEv' + n);
+    const aba = document.getElementById('tema-aba-' + n);
+    if (painel) painel.style.display = (n === numeroTema) ? 'block' : 'none';
+    if (aba) aba.classList.toggle('ativa', n === numeroTema);
+  });
+}
+
+// Entra na etapa de investigação já no tema escolhido
+// (usado pelos cartões de tema e pelo botão)
 function abrirEvidenciasDireto(numeroTema) {
   goTo('e3');
-  garantirEvidenciasPreenchidas();
+  mostrarTemaEvidencia(numeroTema);
 }
 
 // Content builders
