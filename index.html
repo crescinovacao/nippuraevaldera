@@ -2573,6 +2573,24 @@
     flex-direction: column;
     gap: 16px;
 }
+.admin-visao-geral { margin-bottom: 26px; }
+.admin-visao-cards { display: flex; gap: 16px; margin-top: 12px; }
+.admin-visao-card {
+    flex: 1;
+    background: #F5EEFF;
+    border-radius: 14px;
+    padding: 22px 20px;
+    text-align: center;
+}
+.admin-visao-numero {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    color: #2D0051;
+    margin-bottom: 6px;
+}
+.admin-visao-numero-pct { color: #A261E1; }
+.admin-visao-legenda { font-size: 12px; color: #6B6B78; }
 .admin-relatorio-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .admin-relatorio-titulo { font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 16px; color: #2D0051; }
 .admin-relatorio-total { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #A261E1; }
@@ -5840,6 +5858,19 @@ document.addEventListener('keydown', function(e) {
 
             <!-- COL DIREITA: relatório -->
             <div class="admin-col-dir">
+                <div id="admin-visao-geral" class="admin-visao-geral" style="display:none;">
+                    <p class="admin-secao-titulo">Visão geral</p>
+                    <div class="admin-visao-cards">
+                        <div class="admin-visao-card">
+                            <p class="admin-visao-numero" id="admin-visao-participantes">0</p>
+                            <p class="admin-visao-legenda">participantes</p>
+                        </div>
+                        <div class="admin-visao-card">
+                            <p class="admin-visao-numero admin-visao-numero-pct" id="admin-visao-media">0%</p>
+                            <p class="admin-visao-legenda">exploração média</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="admin-relatorio-header">
                     <div>
                         <p class="admin-relatorio-titulo">Relatório de acessos</p>
@@ -6328,6 +6359,27 @@ if (modoAdminURL) {
                 return (acessos[b].entrada || 0) - (acessos[a].entrada || 0);
             });
             if (total) total.textContent = ids.length + ' acesso' + (ids.length !== 1 ? 's' : '');
+
+            // Visão geral: total de participantes + média de exploração
+            const visaoGeral = document.getElementById('admin-visao-geral');
+            const visaoParticipantes = document.getElementById('admin-visao-participantes');
+            const visaoMedia = document.getElementById('admin-visao-media');
+            if (visaoGeral) {
+                if (ids.length === 0) {
+                    visaoGeral.style.display = 'none';
+                } else {
+                    const totalArtefatosGeral = (window.MATERIAIS || []).length || 19;
+                    const mediaExploracao = Math.round(ids.reduce(function(acc, id) {
+                        const eventosId = (acessos[id].eventos ? Object.values(acessos[id].eventos) : []).filter(function(ev) { return ev.tipo === 'material'; });
+                        const unicosId = new Set(eventosId.map(function(ev) { return ev.titulo; }).filter(function(t) { return (window.MATERIAIS || []).some(function(m) { return m.titulo === t; }); })).size;
+                        return acc + Math.min(100, (unicosId / totalArtefatosGeral) * 100);
+                    }, 0) / ids.length);
+                    if (visaoParticipantes) visaoParticipantes.textContent = ids.length;
+                    if (visaoMedia) visaoMedia.textContent = mediaExploracao + '%';
+                    visaoGeral.style.display = 'block';
+                }
+            }
+
             if (ids.length === 0) {
                 lista.innerHTML = '<p class="adm-vazio">Ainda ninguém acessou.</p>';
                 return;
