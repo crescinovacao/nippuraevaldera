@@ -2857,7 +2857,6 @@
   </div>
   <div class="cta" style="margin-top:24px;">
     <button class="btn" onclick="goTo('e6')">Avançar para o Registro de Decisão</button>
-    <button class="btn-pdf btn-pdf-plain" style="margin-left:auto;" onclick="printConsolid()">Exportar PDF</button>
   </div>
 </section>
 
@@ -2894,7 +2893,7 @@
   </div>
   <div class="cta" style="margin-top:26px;">
     <button class="btn" onclick="goTo('e7')">Confirmar e encerrar</button>
-    <button class="btn-pdf btn-pdf-plain" style="margin-left:auto;" onclick="printDecision()">Exportar PDF</button>
+    <button class="btn-pdf btn-pdf-plain" style="margin-left:auto;" onclick="printCombinado()">Exportar PDF</button>
   </div>
 </section>
 
@@ -4474,7 +4473,7 @@ function conteudoDetalhe(m, estilo) {
 // --- ficha de personagens: um cartão por pessoa, reaproveitando os
 // mesmos dados usados no organograma do Orquestrar ---
 function detalhePersonagens(m) {
-    const cards = PERSONAGENS.map(function(p) {
+    const cards = PERSONAGENS.filter(function(p) { return !p.ocultoNaFicha; }).map(function(p) {
         const tagClasse = p.lado === 'nippura' ? 'pessoa-tag-nippura' : 'pessoa-tag-valdera';
         const tagTexto = p.lado === 'nippura' ? 'Nippura' : 'Valdera';
         const foto = p.foto
@@ -4672,7 +4671,9 @@ const PERSONAGENS = [
     { id: 'julia', nome: 'Julia Moran', papel: 'Analista de Projetos Integrados', lado: 'valdera', foto: 'https://i.imgur.com/6PRzJoN.png',
       descricao: 'Trabalha com equipes mistas no cotidiano, percebe o choque cultural antes de todo mundo e raramente é consultada sobre o que vê.' },
     { id: 'pedro', nome: 'Pedro Garval', papel: 'Cidadão de Valdera, área de suporte administrativo', lado: 'valdera', foto: 'https://i.imgur.com/Q7xikrw.png',
-      descricao: 'Não tem cargo de liderança nem discurso a manter; sente o impacto da integração nas práticas que mudaram sem que ninguém explicasse por quê.' }
+      descricao: 'Não tem cargo de liderança nem discurso a manter; sente o impacto da integração nas práticas que mudaram sem que ninguém explicasse por quê.' },
+    { id: 'sorin', nome: 'Sorin Vale', papel: 'Colega de Lucas Serran em Nippura', lado: 'nippura', foto: 'https://i.imgur.com/XnmkSO4.png',
+      descricao: 'Acompanha de fora as mensagens de Lucas sobre a rotina em Valdera.', ocultoNaFicha: true }
 ].map(function(p) {
     const partes = p.nome.split(' ');
     p.iniciais = (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
@@ -5346,7 +5347,7 @@ function pdfDownload(html, filename){
   }).from(el).save().then(function(){ document.body.removeChild(el); });
 }
 
-function printConsolid(){
+function printCombinado(){
   var N = '<span style="font-family:'+PDF_FONT+';font-weight:800;color:'+PDF_ROXO+';">';
   var NE = '</span> ';
   var corpo = ''
@@ -5361,18 +5362,14 @@ function printConsolid(){
        N+'2.'+NE+pv('l2'),
        N+'3.'+NE+pv('l3'),
      ].concat(v('l4') ? [N+'4.'+NE+v('l4')] : []))
-   +'</div>';
-  pdfDownload(pdfWrap('Síntese do Grupo','Orquestrar — Nippura + Valdera', corpo), 'sintese-do-grupo.pdf');
-}
-
-function printDecision(){
-  var corpo = '<div style="margin-bottom:28px;">'
+   +'</div>'
+   +'<div style="margin-bottom:28px;">'+pdfSecTitulo('Registro de Decisão')
    +pdfItemComSubtitulo('Direcionador estratégico', 'Nossa prioridade para o primeiro ano é…', [pv('tk-p')])
    +pdfItemComSubtitulo('Negócio', 'Escolhemos essa prioridade porque precisamos alcançar...', [pv('tk-negocio')])
    +pdfItemComSubtitulo('Liderança', 'Que mudanças queremos começar a perceber na nossa liderança?', [pv('tk-m')])
    +pdfItemComSubtitulo('Acordos', 'Como isso se refletirá no nosso comportamento enquanto alta liderança?', [pv('tk-acordos')])
    +'</div>';
-  pdfDownload(pdfWrap('Registro de Decisão','Orquestrar — Nippura + Valdera', corpo), 'registro-de-decisao.pdf');
+  pdfDownload(pdfWrap('Síntese e Decisão','Orquestrar — Nippura + Valdera', corpo), 'sintese-e-decisao.pdf');
 }
 
 updateProg('e1');
