@@ -600,8 +600,8 @@
         color: var(--texto);
     }
     .bolha p { margin: 0 0 4px 0 !important; opacity: 1 !important; font-size: 13px !important; }
-    .bolha-esquerda { align-self: flex-start; background: #ffffff; }
-    .bolha-direita { align-self: flex-end; background: #dcf8c6; }
+    .bolha-esquerda { background: #ffffff; }
+    .bolha-direita { background: #dcf8c6; }
     .bolha-nome {
         display: block; font-size: 11px; font-weight: 700;
         color: var(--azul-principal); margin-bottom: 3px;
@@ -609,6 +609,18 @@
     .bolha-hora {
         position: absolute; bottom: 5px; right: 10px;
         font-size: 9px; opacity: 0.55;
+    }
+    .bolha-linha { display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
+    .bolha-linha-esquerda { align-self: flex-start; }
+    .bolha-linha-direita { align-self: flex-end; }
+    .bolha-avatar {
+        width: 26px; height: 26px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0; margin-bottom: 2px;
+    }
+    .bolha-avatar-iniciais {
+        display: flex; align-items: center; justify-content: center;
+        background: var(--azul-claro); color: var(--azul-escuro);
+        font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 10px;
     }
 
     /* --- documento oficial --- */
@@ -4373,6 +4385,21 @@ function detalheAudio(m) {
 // Nome 1 (lado) / Nome 2 (lado)" no início do texto pra reconhecer
 // quem fala. Datas/semanas viram divisores; horários (ex: 21h47)
 // ficam no rodapé de cada balão.
+// Busca a foto de um personagem pelo nome completo (usado nas conversas
+// de WhatsApp). Se não achar foto, devolve as iniciais para um avatar
+// de fallback. Nunca inventa gente que não está na lista de personagens.
+function avatarPorNomeCompleto(nomeCompleto) {
+    const pessoa = (typeof PERSONAGENS !== 'undefined')
+        ? PERSONAGENS.find(function(p) { return p.nome === nomeCompleto; })
+        : null;
+    if (pessoa && pessoa.foto) {
+        return '<img class="bolha-avatar" src="' + pessoa.foto + '" alt="">';
+    }
+    const partes = nomeCompleto.trim().split(' ');
+    const iniciais = (partes[0][0] + (partes[partes.length - 1][0] || '')).toUpperCase();
+    return '<div class="bolha-avatar bolha-avatar-iniciais">' + iniciais + '</div>';
+}
+
 function detalheWhatsapp(m) {
     const texto = m.texto;
     const participantesMatch = texto.match(/Participantes:\s*([^\n]+)/i);
@@ -4387,10 +4414,14 @@ function detalheWhatsapp(m) {
     function fechaBolha() {
         if (!atual) return;
         const lado = nomes.length && atual.nome === nomes[0] ? 'esquerda' : 'direita';
-        corpo += '<div class="bolha bolha-' + lado + '">' +
+        const avatarHtml = nomes.length > 1 ? avatarPorNomeCompleto(atual.nome) : '';
+        const bolhaHtml = '<div class="bolha bolha-' + lado + '">' +
             (nomes.length > 1 ? '<span class="bolha-nome">' + atual.nome + '</span>' : '') +
             atual.textos.map(function(t) { return '<p>' + t + '</p>'; }).join('') +
             (atual.hora ? '<span class="bolha-hora">' + atual.hora + '</span>' : '') +
+        '</div>';
+        corpo += '<div class="bolha-linha bolha-linha-' + lado + '">' +
+            (lado === 'esquerda' ? avatarHtml + bolhaHtml : bolhaHtml + avatarHtml) +
         '</div>';
         atual = null;
     }
@@ -4759,7 +4790,9 @@ const PERSONAGENS = [
     { id: 'julia', nome: 'Julia Moran', papel: 'Analista de Projetos Integrados', lado: 'valdera', foto: 'https://i.imgur.com/6PRzJoN.png',
       descricao: 'Trabalha com equipes mistas no cotidiano, percebe o choque cultural antes de todo mundo e raramente é consultada sobre o que vê.' },
     { id: 'pedro', nome: 'Pedro Garval', papel: 'Cidadão de Valdera, área de suporte administrativo', lado: 'valdera', foto: 'https://i.imgur.com/Q7xikrw.png',
-      descricao: 'Não tem cargo de liderança nem discurso a manter; sente o impacto da integração nas práticas que mudaram sem que ninguém explicasse por quê.' }
+      descricao: 'Não tem cargo de liderança nem discurso a manter; sente o impacto da integração nas práticas que mudaram sem que ninguém explicasse por quê.' },
+    { id: 'sorin', nome: 'Sorin Vale', papel: 'Colega de Lucas Serran em Nippura', lado: 'nippura', foto: 'https://i.imgur.com/XnmkSO4.png',
+      descricao: 'Acompanha de fora as mensagens de Lucas sobre a rotina em Valdera.' }
 ].map(function(p) {
     const partes = p.nome.split(' ');
     p.iniciais = (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
