@@ -1507,6 +1507,25 @@
 #modal-orquestrar .card { background:var(--card); border-radius:8px; border:1px solid var(--border); }
 #modal-orquestrar #dossieEvidenciasView { border-radius:14px; padding:8px 4px; }
 
+#modal-orquestrar .passo-nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; border-bottom:1px solid var(--border);
+}
+#modal-orquestrar .passo-tabs { display:flex; gap:8px; }
+#modal-orquestrar .passo-tab {
+    width:30px; height:30px; border-radius:50%;
+    background:var(--bg); border:1px solid var(--border); color:var(--text-sec);
+    font-family:var(--r); font-weight:700; font-size:13px; cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, color .2s ease;
+}
+#modal-orquestrar .passo-tab:hover { border-color:var(--blue); }
+#modal-orquestrar .passo-tab.ativa { background:var(--blue); border-color:var(--blue); color:#fff; }
+#modal-orquestrar .passo-contador { font-size:11.5px; color:var(--text-sec); font-family:var(--r); }
+#modal-orquestrar .passo-conteudo { padding:24px 24px 8px; min-height:180px; }
+#modal-orquestrar .passo-botoes {
+    display:flex; justify-content:space-between; padding:18px 24px 22px;
+}
+
 /* AVATAR */
 #modal-orquestrar .av { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--r); font-weight:700; font-size:11px; flex-shrink:0; }
 #modal-orquestrar .av-foto { object-fit:cover; }
@@ -1603,6 +1622,8 @@
     font-size:14px; cursor:pointer; transition:background .2s ease, border-color .2s ease;
 }
 #modal-orquestrar .btn-secundario-orq:hover { background:var(--bg); border-color:var(--blue); }
+#modal-orquestrar .btn-secundario-orq:disabled { opacity:.4; cursor:not-allowed; }
+#modal-orquestrar .btn-secundario-orq:disabled:hover { background:none; border-color:var(--border); }
 #modal-orquestrar .dossie-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -1730,7 +1751,7 @@
 #modal-orquestrar .notes-divider { border:none; border-top:1px dashed var(--doc-border); margin:13px 0; }
 
 /* Accordion */
-#modal-orquestrar .acc-item { border-bottom:1px solid var(--border-lt); }
+#modal-orquestrar .acc-item { border-bottom:1px solid var(--border); }
 #modal-orquestrar .acc-item:last-child { border-bottom:none; }
 #modal-orquestrar .acc-trigger { width:100%; background:none; border:none; padding:20px 24px; text-align:left; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; transition:background .15s; }
 #modal-orquestrar .acc-trigger:hover { background:#F8FAFB; }
@@ -1741,7 +1762,7 @@
 #modal-orquestrar .ev-type { font-size:10px; color:var(--text-sec); font-style:italic; }
 #modal-orquestrar .acc-icon { color:var(--text-sec); font-size:14px; flex-shrink:0; transition:transform .25s; }
 #modal-orquestrar .acc-icon.open { transform:rotate(180deg); }
-#modal-orquestrar .acc-body { display:none; padding:4px 24px 26px; }
+#modal-orquestrar .acc-body { display:none; padding:6px 24px 26px; background:var(--bg); }
 #modal-orquestrar .acc-body.open { display:block; }
 
 /* Evidence styles */
@@ -1874,8 +1895,8 @@
     .orq-header .modal-close:hover { background: #e8ecf3; }
 
     #modal-orquestrar {
-        --bg: #FFFFFF;
-        --card: #F5EEFF;
+        --bg: #F7F6FA;
+        --card: #FFFFFF;
         --text: #210000;
         --text-sec: #210000;
         --blue: #A261E1;
@@ -2796,17 +2817,17 @@
   <h1 class="page-h">O que aconteceu no offsite</h1>
   <p class="sub" style="margin-top:6px;max-width:640px;">O offsite gerou três frentes de registro. Leia as evidências de cada uma pra investigar o que aconteceu.</p>
   <div class="dossie-grid">
-    <div class="dossie-card accent-blue" onclick="abrirEvidenciasDireto(1)" style="cursor:pointer;">
+    <div class="dossie-card accent-blue">
       <div class="dossie-num">Tema 1</div>
       <div class="dossie-title">Para Onde Queremos Ir</div>
       <p class="dossie-desc">Registros da sessão estratégica. O que a liderança discutiu sobre o futuro da cooperação.</p>
     </div>
-    <div class="dossie-card accent-purple" onclick="abrirEvidenciasDireto(2)" style="cursor:pointer;">
+    <div class="dossie-card accent-purple">
       <div class="dossie-num">Tema 2</div>
       <div class="dossie-title">O Que Está Nos Travando</div>
       <p class="dossie-desc">Reflexões individuais e pedidos entre as lideranças. O que está impedindo a mudança desejada.</p>
     </div>
-    <div class="dossie-card accent-pink" onclick="abrirEvidenciasDireto(3)" style="cursor:pointer;">
+    <div class="dossie-card accent-pink">
       <div class="dossie-num">Tema 3</div>
       <div class="dossie-title">Acordos e Próximos Passos</div>
       <p class="dossie-desc">O que saiu do offsite: acordos feitos, iniciativas em construção e questões sem resposta.</p>
@@ -4860,37 +4881,56 @@ document.querySelectorAll('#modal-orquestrar textarea.fi, #modal-orquestrar text
 // Preenche as 3 seções de evidência uma única vez (o conteúdo é
 // estático, não precisa refazer sempre)
 var evidenciasPreenchidas = false;
+var DOSSIES_DADOS = null;
+var passoAtual = { 1: 0, 2: 0, 3: 0 };
+
 function garantirEvidenciasPreenchidas() {
-  if (evidenciasPreenchidas) return;
-  document.getElementById('dossieEv1').innerHTML = getDossie1();
-  document.getElementById('dossieEv2').innerHTML = getDossie2();
-  document.getElementById('dossieEv3').innerHTML = getDossie3();
-  document.querySelectorAll('#dossieEvidenciasView .acc-trigger').forEach(function(trigger) {
-    trigger.addEventListener('click', function() {
-      const item = trigger.parentElement;
-      const body = item.querySelector('.acc-body');
-      const icon = trigger.querySelector('.acc-icon');
-      const vaiAbrir = body && !body.classList.contains('open');
-
-      // fecha qualquer outro item aberto (só um por vez)
-      document.querySelectorAll('#dossieEvidenciasView .acc-body.open').forEach(function(outroBody) {
-        if (outroBody !== body) outroBody.classList.remove('open');
-      });
-      document.querySelectorAll('#dossieEvidenciasView .acc-icon.open').forEach(function(outroIcon) {
-        if (outroIcon !== icon) outroIcon.classList.remove('open');
-      });
-
-      if (body) body.classList.toggle('open', vaiAbrir);
-      if (icon) icon.classList.toggle('open', vaiAbrir);
-    });
-  });
-  evidenciasPreenchidas = true;
+  if (DOSSIES_DADOS) return;
+  DOSSIES_DADOS = { 1: getDossie1(), 2: getDossie2(), 3: getDossie3() };
 }
 
-// Mostra só o tema escolhido por vez (em vez dos 3 empilhados),
-// pra não ter 12 itens de acordeão abertos de uma vez na tela
-function mostrarTemaEvidencia(numeroTema) {
+// Mostra um item por vez dentro do tema, com abinhas numeradas e
+// anterior/próximo — em vez de empilhar tudo num acordeão
+function renderPassoTema(numeroTema) {
   garantirEvidenciasPreenchidas();
+  const itens = DOSSIES_DADOS[numeroTema];
+  const idx = passoAtual[numeroTema] || 0;
+  const item = itens[idx];
+  const container = document.getElementById('dossieEv' + numeroTema);
+  if (!container || !item) return;
+
+  const stepsHtml = itens.map(function(it, i) {
+    return '<button class="passo-tab' + (i === idx ? ' ativa' : '') + '" onclick="irParaPasso(' + numeroTema + ',' + i + ')">' + (i + 1) + '</button>';
+  }).join('');
+
+  container.innerHTML =
+    '<div class="passo-nav">' +
+      '<div class="passo-tabs">' + stepsHtml + '</div>' +
+      '<div class="passo-contador">' + (idx + 1) + ' de ' + itens.length + '</div>' +
+    '</div>' +
+    '<div class="passo-conteudo">' +
+      '<div class="ev-meta" style="margin-bottom:16px;">' +
+        '<span class="ev-t" style="font-size:16px;">' + item.title + '</span>' +
+        '<span class="ev-type">' + item.type + '</span>' +
+      '</div>' +
+      item.body +
+    '</div>' +
+    '<div class="passo-botoes">' +
+      '<button class="btn-secundario-orq"' + (idx === 0 ? ' disabled' : '') + ' onclick="irParaPasso(' + numeroTema + ',' + (idx - 1) + ')">&larr; Anterior</button>' +
+      '<button class="btn-secundario-orq"' + (idx === itens.length - 1 ? ' disabled' : '') + ' onclick="irParaPasso(' + numeroTema + ',' + (idx + 1) + ')">Próximo &rarr;</button>' +
+    '</div>';
+}
+
+function irParaPasso(numeroTema, novoIndex) {
+  const itens = DOSSIES_DADOS[numeroTema];
+  if (!itens || novoIndex < 0 || novoIndex >= itens.length) return;
+  passoAtual[numeroTema] = novoIndex;
+  renderPassoTema(numeroTema);
+}
+
+// Mostra só o tema escolhido por vez (em vez dos 3 empilhados)
+function mostrarTemaEvidencia(numeroTema) {
+  renderPassoTema(numeroTema);
   [1, 2, 3].forEach(function(n) {
     const painel = document.getElementById('dossieEv' + n);
     const aba = document.getElementById('tema-aba-' + n);
@@ -4950,10 +4990,12 @@ function getDossie1(){
    +sp('CD','V','Carla Davan','','"Clareza de processo, para mim, é saber o que está na minha mão decidir. Não o processo da outra parte, o meu. Hoje não sei mais com clareza onde começa e onde termina a minha autoridade."')
    +'<div class="ev-note" style="margin-top:14px;">Nota do facilitador: três votos na mesma característica, por razões diferentes. "Clareza de processo" pode significar previsibilidade de etapas, legibilidade de status ou clareza de autoridade, conceitos relacionados, mas não idênticos.</div>';
 
-  return acc('01-A','Nota de abertura da sessão','nota do facilitador',a)
-        +acc('01-B','O que essa cooperação ainda precisa','falas individuais',b)
-        +acc('01-C','Votação: que características são mais urgentes?','votação',c)
-        +acc('01-D','A mesma palavra, três sentidos','registro do plenário',d);
+  return [
+    { title: 'Nota de abertura da sessão', type: 'nota do facilitador', body: a },
+    { title: 'O que essa cooperação ainda precisa', type: 'falas individuais', body: b },
+    { title: 'Votação: que características são mais urgentes?', type: 'votação', body: c },
+    { title: 'A mesma palavra, três sentidos', type: 'registro do plenário', body: d }
+  ];
 }
 
 function getDossie2(){
@@ -4985,9 +5027,11 @@ function getDossie2(){
    +'<div class="ev-q">Quem é responsável por fazer a ponte entre os dois sistemas quando surgem mal-entendidos?</div>'
    +'<p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Todos concordaram que esse papel precisa existir. Nenhum dos presentes soube dizer se já existe, quem ocupa, ou o que seria necessário para formalizá-lo. A discussão foi encerrada com a intenção de "aprofundar nas próximas semanas."</p>';
 
-  return acc('02-A','Registros de reflexão','exercício individual',a)
-        +acc('02-B','O que pedimos ao outro lado','pedidos agrupados por tema',b)
-        +acc('02-C','O que ficou sem resposta','nota do facilitador',c);
+  return [
+    { title: 'Registros de reflexão', type: 'exercício individual', body: a },
+    { title: 'O que pedimos ao outro lado', type: 'pedidos agrupados por tema', body: b },
+    { title: 'O que ficou sem resposta', type: 'nota do facilitador', body: c }
+  ];
 }
 
 function getDossie3(){
@@ -5014,10 +5058,12 @@ function getDossie3(){
   var d='<div class="ev-note" style="margin-bottom:12px;">Registrado pelo facilitador como síntese da discussão de encerramento. Fala do grupo, não atribuída a um único participante.</div>'
    +'<blockquote style="font-size:14px;color:var(--text);line-height:1.75;font-style:italic;padding:14px;border-left:3px solid var(--border);margin-top:8px;">"Saímos daqui com perguntas mais claras do que as que trouxemos. E com mais honestidade sobre onde estamos de fato. O próximo passo é transformar isso em algo que o sistema possa sustentar, não apenas o que cada um de nós prometeu aqui dentro."</blockquote>';
 
-  return acc('03-A','Acordos comportamentais','acordos definidos em plenária',a)
-        +acc('03-B','Próximos passos','registro de fechamento',b)
-        +acc('03-C','O que permaneceu sem resposta','nota do facilitador',c)
-        +acc('03-D','Registro de encerramento','fala síntese do grupo',d);
+  return [
+    { title: 'Acordos comportamentais', type: 'acordos definidos em plenária', body: a },
+    { title: 'Próximos passos', type: 'registro de fechamento', body: b },
+    { title: 'O que permaneceu sem resposta', type: 'nota do facilitador', body: c },
+    { title: 'Registro de encerramento', type: 'fala síntese do grupo', body: d }
+  ];
 }
 
 // PDF exports
