@@ -845,7 +845,7 @@
     }
     .tema-video .titulo-video-overlay h3 { color: #fff; font-size: 16px; margin-top: 2px; }
     .tema-video .roteiro-corpo { background: var(--fundo); border-radius: 10px; padding: 18px 20px 10px 20px; }
-    .roteiro-corpo-centro > *:nth-child(-n+2) { text-align: center; }
+    .roteiro-corpo-centro, .roteiro-corpo-centro .meta-linha, .roteiro-corpo-centro p { text-align: center; }
     .roteiro-corpo-centro > *:first-child {
         font-family: 'Raleway', sans-serif !important;
         font-weight: 700 !important;
@@ -1564,6 +1564,26 @@
 #modal-orquestrar .dossie-h-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:16px; }
 #modal-orquestrar .time-chip { display:inline-flex; align-items:center; font-size:11px; font-weight:500; color:var(--text-sec); background:var(--card); border:1px solid var(--border); border-radius:20px; padding:4px 12px; flex-shrink:0; margin-top:4px; }
 #modal-orquestrar .dossie-instruct { font-size:13px; color:var(--text-sec); margin-top:6px; margin-bottom:20px; }
+
+#modal-orquestrar .dossie-abas { display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--border); }
+#modal-orquestrar .dossie-aba {
+    background:none; border:none; cursor:pointer;
+    padding:10px 16px; font-family:var(--b); font-size:13.5px; font-weight:700;
+    color:var(--text-sec); border-bottom:2px solid transparent; margin-bottom:-1px;
+    transition:color .2s ease, border-color .2s ease;
+}
+#modal-orquestrar .dossie-aba:hover { color:var(--text); }
+#modal-orquestrar .dossie-aba.ativa { color:var(--blue); border-bottom-color:var(--blue); }
+#modal-orquestrar .dossie-ev-titulo {
+    font-family:'Raleway',sans-serif; font-weight:800; font-size:14px;
+    color:var(--blue); margin-bottom:10px;
+}
+#modal-orquestrar .btn-secundario-orq {
+    background:none; border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:12px 18px; font-family:var(--b); font-weight:700;
+    font-size:14px; cursor:pointer; transition:background .2s ease, border-color .2s ease;
+}
+#modal-orquestrar .btn-secundario-orq:hover { background:var(--bg); border-color:var(--blue); }
 #modal-orquestrar .dossie-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -2755,19 +2775,19 @@
 <section id="e2" class="state">
   <p class="tag">Investigação</p>
   <h1 class="page-h">O que aconteceu no offsite</h1>
-  <p class="sub" style="margin-top:6px;max-width:640px;">O offsite gerou três frentes de registro. A seguir, você vai poder conversar com o Agente do Dossiê, que conhece o conteúdo das três e vai te ajudar a investigar o que aconteceu.</p>
+  <p class="sub" style="margin-top:6px;max-width:640px;">O offsite gerou três frentes de registro. Você pode ler as evidências de cada uma por conta própria, ou conversar com o Agente do Dossiê, que conhece o conteúdo das três e ajuda a investigar.</p>
   <div class="dossie-grid">
-    <div class="dossie-card accent-blue">
+    <div class="dossie-card accent-blue" onclick="abrirEvidenciasDireto(1)" style="cursor:pointer;">
       <div class="dossie-num">Tema 1</div>
       <div class="dossie-title">Para Onde Queremos Ir</div>
       <p class="dossie-desc">Registros da sessão estratégica. O que a liderança discutiu sobre o futuro da cooperação.</p>
     </div>
-    <div class="dossie-card accent-purple">
+    <div class="dossie-card accent-purple" onclick="abrirEvidenciasDireto(2)" style="cursor:pointer;">
       <div class="dossie-num">Tema 2</div>
       <div class="dossie-title">O Que Está Nos Travando</div>
       <p class="dossie-desc">Reflexões individuais e pedidos entre as lideranças. O que está impedindo a mudança desejada.</p>
     </div>
-    <div class="dossie-card accent-pink">
+    <div class="dossie-card accent-pink" onclick="abrirEvidenciasDireto(3)" style="cursor:pointer;">
       <div class="dossie-num">Tema 3</div>
       <div class="dossie-title">Acordos e Próximos Passos</div>
       <p class="dossie-desc">O que saiu do offsite: acordos feitos, iniciativas em construção e questões sem resposta.</p>
@@ -2775,6 +2795,7 @@
   </div>
   <div class="cta" style="margin-top:26px;">
     <button class="btn" onclick="abrirAgenteDossie()">Conversar com o Agente do Dossiê</button>
+    <button class="btn-secundario-orq" onclick="abrirEvidenciasDireto(1)">Ler evidências por conta própria</button>
   </div>
 </section>
 
@@ -2786,7 +2807,12 @@
       <h1 class="page-h">Agente do Dossiê</h1>
     </div>
   </div>
-  <p class="dossie-instruct">Pergunte livremente sobre o offsite. Registre suas percepções no bloco de notas enquanto investiga.</p>
+  <p class="dossie-instruct">Converse com o agente ou leia as evidências direto — as duas formas dão acesso ao mesmo conteúdo. Registre suas percepções no bloco de notas enquanto investiga.</p>
+
+  <div class="dossie-abas">
+    <button class="dossie-aba ativa" id="aba-btn-chat" onclick="mostrarAbaDossie('chat')">💬 Conversar com o agente</button>
+    <button class="dossie-aba" id="aba-btn-evidencias" onclick="mostrarAbaDossie('evidencias')">📄 Ver evidências</button>
+  </div>
 
   <div class="dossie-layout" style="grid-template-columns:1fr;">
     <div class="chat-window" id="dossieChatWindow" style="display:flex;">
@@ -2803,6 +2829,17 @@
         <input type="text" class="chat-input" id="chatInput" placeholder="Escreva sua pergunta...">
         <button class="chat-send-btn" id="chatSendBtn" aria-label="Enviar">➤</button>
       </div>
+    </div>
+
+    <div class="card" id="dossieEvidenciasView" style="display:none;">
+      <div class="acc-item" style="border:none;">
+        <div class="dossie-ev-titulo">Tema 1 — Para Onde Queremos Ir</div>
+      </div>
+      <div id="dossieEv1"></div>
+      <div class="dossie-ev-titulo" style="margin-top:22px;">Tema 2 — O Que Está Nos Travando</div>
+      <div id="dossieEv2"></div>
+      <div class="dossie-ev-titulo" style="margin-top:22px;">Tema 3 — Acordos e Próximos Passos</div>
+      <div id="dossieEv3"></div>
     </div>
   </div>
 
@@ -3978,6 +4015,11 @@ Dino: Vizinho, sem vínculo com as empresas`
     },
 ];
 
+// Exposto globalmente pro painel do consultor (módulo Firebase à
+// parte) montar a lista de artefatos sempre a partir da fonte real,
+// em vez de uma lista copiada à mão que pode ficar desatualizada.
+window.MATERIAIS = MATERIAIS;
+
 // ============================================================
 // "CARINHAS" POR FORMATO
 // ------------------------------------------------------------
@@ -4821,6 +4863,57 @@ document.querySelectorAll('#modal-orquestrar textarea.fi, #modal-orquestrar text
 function abrirAgenteDossie() {
   resetDossieChat();
   goTo('e3');
+  mostrarAbaDossie('chat');
+}
+
+// Preenche as 3 seções de evidência uma única vez (o conteúdo é
+// estático, não precisa refazer a cada troca de aba)
+var evidenciasPreenchidas = false;
+function garantirEvidenciasPreenchidas() {
+  if (evidenciasPreenchidas) return;
+  document.getElementById('dossieEv1').innerHTML = getDossie1();
+  document.getElementById('dossieEv2').innerHTML = getDossie2();
+  document.getElementById('dossieEv3').innerHTML = getDossie3();
+  document.querySelectorAll('#dossieEvidenciasView .acc-trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function() {
+      const item = trigger.parentElement;
+      const body = item.querySelector('.acc-body');
+      const icon = trigger.querySelector('.acc-icon');
+      if (body) body.classList.toggle('open');
+      if (icon) icon.classList.toggle('open');
+    });
+  });
+  evidenciasPreenchidas = true;
+}
+
+// Alterna entre a aba de chat e a de evidências dentro do E3
+function mostrarAbaDossie(aba) {
+  const btnChat = document.getElementById('aba-btn-chat');
+  const btnEv = document.getElementById('aba-btn-evidencias');
+  const janelaChat = document.getElementById('dossieChatWindow');
+  const janelaEv = document.getElementById('dossieEvidenciasView');
+  if (!btnChat || !btnEv || !janelaChat || !janelaEv) return;
+
+  if (aba === 'evidencias') {
+    garantirEvidenciasPreenchidas();
+    janelaChat.style.display = 'none';
+    janelaEv.style.display = 'block';
+    btnEv.classList.add('ativa');
+    btnChat.classList.remove('ativa');
+  } else {
+    janelaEv.style.display = 'none';
+    janelaChat.style.display = 'flex';
+    btnChat.classList.add('ativa');
+    btnEv.classList.remove('ativa');
+  }
+}
+
+// Entra direto na etapa de investigação já na aba de evidências
+// (usado pelos cartões de tema e pelo botão "Ler evidências")
+function abrirEvidenciasDireto(numeroTema) {
+  resetDossieChat();
+  goTo('e3');
+  mostrarAbaDossie('evidencias');
 }
 
 // ============================================================
@@ -6545,8 +6638,8 @@ if (modoAdminURL) {
                 const turmaTag = v.turma && v.turma !== 'sem_turma'
                     ? '<span class="adm-card-turma">' + escapeHtml(v.turma) + '</span>' : '';
                 const eventos = (v.eventos ? Object.values(v.eventos) : []).filter(function(ev) { return ev.tipo === 'material'; });
-                const TOTAL_ARTEFATOS = 19;
-                const unicos = new Set(eventos.map(function(ev) { return ev.titulo; })).size;
+                const TOTAL_ARTEFATOS = (window.MATERIAIS || []).length || 19;
+                const unicos = new Set(eventos.map(function(ev) { return ev.titulo; }).filter(function(t) { return (window.MATERIAIS || []).some(function(m) { return m.titulo === t; }); })).size;
                 const pct = Math.min(100, Math.round((unicos / TOTAL_ARTEFATOS) * 100));
                 // agrega por título: soma duração total, conta quantas vezes abriu
                 const agregados = {};
@@ -6643,14 +6736,7 @@ if (modoAdminURL) {
         });
 
         // --- gerar PDF do relatório ---
-        const TODOS_ARTEFATOS = [
-            'Nippura e Valdera: Contexto e Estratégia','Ficha de Personagens','Tratado de Cooperação Estratégica',
-            'ANN: Três anos de parceria','Código de Conduta Institucional de Nippura','Depoimento: Sofia Aldren',
-            'Diário de Bordo: Daven Rol','Mensagens Privadas: Lucas e Sorin','Pronunciamento: Rael Voss',
-            'Regulamento Interno de Nippura','Dados Comparativos de Valdera','Mensagem de Áudio: Ana Breva',
-            'Pesquisa de Bem-Estar','Portal Valdera News','Reflexão: Renata Solva','Relato: Julia Moran',
-            'Síntese Cultural de Valdera','Transcrição: Alinhamento Carla e Vera','Conversa informal: Pedro e Dino'
-        ];
+        const TODOS_ARTEFATOS = (window.MATERIAIS || []).map(function(m) { return m.titulo; });
 
         const btnPdfRel = document.getElementById('admin-btn-pdf-relatorio');
         if (btnPdfRel) btnPdfRel.addEventListener('click', function() {
@@ -6685,7 +6771,7 @@ if (modoAdminURL) {
 
                 // média de exploração
                 const mediaExpl = Math.round(pessoas.reduce(function(acc, p) {
-                    const unicos = new Set(Object.values(p.eventos || {}).filter(function(e) { return e.tipo === 'material'; }).map(function(e) { return e.titulo; })).size;
+                    const unicos = new Set(Object.values(p.eventos || {}).filter(function(e) { return e.tipo === 'material' && TODOS_ARTEFATOS.indexOf(e.titulo) !== -1; }).map(function(e) { return e.titulo; })).size;
                     return acc + (unicos / TODOS_ARTEFATOS.length) * 100;
                 }, 0) / total);
 
@@ -6714,7 +6800,7 @@ if (modoAdminURL) {
                 const pessoasHtml = Object.entries(acessos).sort(function(a, b) { return (b[1].entrada||0)-(a[1].entrada||0); }).map(function(entry) {
                     var pid = entry[0]; var p = entry[1];
                     var pnome = getNome(p, pid);
-                    const unicos = new Set(Object.values(p.eventos||{}).filter(function(e){return e.tipo === 'material';}).map(function(e){return e.titulo;})).size;
+                    const unicos = new Set(Object.values(p.eventos||{}).filter(function(e){return e.tipo === 'material' && TODOS_ARTEFATOS.indexOf(e.titulo) !== -1;}).map(function(e){return e.titulo;})).size;
                     const pct = Math.round((unicos/TODOS_ARTEFATOS.length)*100);
                     var notaHtml = (p.notas && p.notas.trim())
                         ? '<div style="background:#f8f4ff;border-radius:8px;padding:10px 12px;margin:4px 0 14px 0;font-size:12px;color:#333;line-height:1.6;white-space:pre-wrap;">' + escapeHtml(p.notas) + '</div>'
