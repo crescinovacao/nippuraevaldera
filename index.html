@@ -572,6 +572,12 @@
         color: var(--azul-principal); text-transform: uppercase; letter-spacing: 0.3px;
         margin-bottom: 2px;
     }
+    .fala-com-avatar { display: flex !important; align-items: flex-start; gap: 10px; }
+    .fala-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0; margin-top: 1px;
+    }
+    .fala-conteudo { flex: 1; }
 
     /* --- whatsapp --- */
     .whatsapp-data {
@@ -1035,11 +1041,12 @@
     }
 
     /* --- tema transcrição: chamada --- */
-    .tema-transcricao .call-header {
-        background: var(--fundo); border-radius: 10px;
-        padding: 10px 16px; margin-bottom: 16px;
-        font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.6;
-        font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    .tema-transcricao-card {
+        background: var(--branco);
+        border: 1px solid rgba(0,10,40,0.14);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,10,40,0.03);
+        padding: 24px 26px;
     }
     .tema-transcricao .fala { border-left: 3px solid var(--azul-claro); padding-left: 12px; margin-bottom: 14px !important; }
     .tema-transcricao .fala:nth-of-type(even) { border-left-color: var(--azul-principal); }
@@ -4101,11 +4108,7 @@ Maren Dol   |   Instituto de Estudos Culturais de Valdera   |   Não citar sem a
         categoria: "valdera",
         formato: "Transcrição",
         resumo: "Reunião quinzenal entre as delegadas de integração de Nippura e Valdera.",
-        texto: `TRANSCRIÇÃO DE REUNIÃO
-
-Registro interno, uso restrito à coordenação
-
-Alinhamento quinzenal
+        texto: `Registro interno, uso restrito à coordenação
 
 Carla Davan (Valdera) e Vera Solen (Nippura)   |   Formato: videoconferência
 
@@ -4263,6 +4266,17 @@ function chromeAbertura(m, estilo) {
 }
 
 // Classificador genérico de parágrafos (tudo exceto whatsapp)
+// Busca a foto de um personagem pelo primeiro nome (usado nas falas de
+// transcrições, ex: "VERA" -> foto de Vera Solen). Retorna '' se não achar.
+function fotoPorNomeCurto(nomeCurto) {
+    if (typeof PERSONAGENS === 'undefined') return '';
+    const alvo = nomeCurto.trim().toUpperCase();
+    const pessoa = PERSONAGENS.find(function(p) {
+        return p.nome.split(' ')[0].toUpperCase() === alvo;
+    });
+    return (pessoa && pessoa.foto) ? pessoa.foto : '';
+}
+
 function paragrafosClassificados(texto, estilo) {
     const blocos = texto.split('\n\n').map(function(p) { return p.trim(); }).filter(Boolean);
     let html = '';
@@ -4312,7 +4326,9 @@ function paragrafosClassificados(texto, estilo) {
 
         const falaComDoisPontos = estilo === 'transcricao' ? p.match(/^([A-ZÀ-Ü]{2,20}):\s+(.+)$/s) : null;
         if (falaComDoisPontos) {
-            html += '<p class="fala"><span class="fala-nome">' + falaComDoisPontos[1] + '</span>' + falaComDoisPontos[2].replace(/\n/g, '<br>') + '</p>';
+            const fotoFala = fotoPorNomeCurto(falaComDoisPontos[1]);
+            const avatarHtml = fotoFala ? '<img class="fala-avatar" src="' + fotoFala + '" alt="">' : '';
+            html += '<p class="fala' + (fotoFala ? ' fala-com-avatar' : '') + '">' + avatarHtml + '<span class="fala-conteudo"><span class="fala-nome">' + falaComDoisPontos[1] + '</span>' + falaComDoisPontos[2].replace(/\n/g, '<br>') + '</span></p>';
             continue;
         }
 
@@ -4591,8 +4607,7 @@ function detalheDados(m) {
 
 // --- transcrição: chamada ---
 function detalheTranscricao(m) {
-    return '<div class="tema-transcricao">' +
-        '<div class="call-header">Chamada de vídeo · registro transcrito</div>' +
+    return '<div class="tema-transcricao tema-transcricao-card">' +
         paragrafosClassificados(m.texto, 'transcricao') +
     '</div>';
 }
