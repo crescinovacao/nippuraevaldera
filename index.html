@@ -845,7 +845,7 @@
     }
     .tema-video .titulo-video-overlay h3 { color: #fff; font-size: 16px; margin-top: 2px; }
     .tema-video .roteiro-corpo { background: var(--fundo); border-radius: 10px; padding: 18px 20px 10px 20px; }
-    .roteiro-corpo-centro, .roteiro-corpo-centro .meta-linha, .roteiro-corpo-centro p { text-align: center; }
+    .roteiro-corpo-centro > *:nth-child(-n+2) { text-align: center; }
     .roteiro-corpo-centro > *:first-child {
         font-family: 'Raleway', sans-serif !important;
         font-weight: 700 !important;
@@ -3635,10 +3635,10 @@ Concordo. Dorme, amanhã é outro dia!
         titulo: "Pronunciamento: Rael Voss",
         categoria: "nippura",
         formato: "Roteiro de vídeo",
+        midia: "https://player.vimeo.com/video/1227475095",
+        legendaCentralizada: true,
         resumo: "Discurso oficial do chanceler de Nippura no terceiro aniversário do tratado.",
-        texto: `Pronunciamento oficial
-
-Chanceler Rael Voss | Chancelaria de Nippura
+        texto: `Chanceler Rael Voss | Pronunciamento oficial
 
 Terceiro Aniversário do Tratado de Cooperação Estratégica com Valdera
 
