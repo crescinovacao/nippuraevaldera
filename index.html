@@ -4428,7 +4428,8 @@ function embedVideo(url) {
     }
     const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
     if (vimeo) {
-        return '<iframe src="https://player.vimeo.com/video/' + vimeo[1] + '" allowfullscreen loading="lazy"></iframe>';
+        const paramsVimeo = 'title=0&byline=0&portrait=0&badge=0&autopause=0&dnt=1';
+        return '<iframe src="https://player.vimeo.com/video/' + vimeo[1] + '?' + paramsVimeo + '" allowfullscreen loading="lazy"></iframe>';
     }
     return '<video controls src="' + url + '"></video>';
 }
